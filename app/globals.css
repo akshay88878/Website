@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-surface text-ink-900 antialiased;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1,
+    "ss01" 1;
+}
+
+::selection {
+  @apply bg-brand-200 text-ink-900;
+}
+
+@layer base {
+  * {
+    @apply border-surface-border;
+  }
+
+  body {
+    @apply m-0;
+  }
+
+  main {
+    @apply relative;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight text-ink-900;
+  }
+
+  p {
+    @apply leading-7 text-ink-600;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply relative overflow-hidden bg-hero-mesh;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-bold tracking-tight text-ink-900 md:text-4xl;
+  }
+
+  .section-copy {
+    @apply max-w-2xl text-base text-ink-600 md:text-lg;
+  }
+
+  .glass-panel {
+    @apply rounded-3xl border border-white/70 bg-white/85 shadow-soft backdrop-blur;
+  }
+}
