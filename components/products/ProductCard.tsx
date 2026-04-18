@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/Card";
-import type { Product } from "@/data/products";
+import type { ProductItem } from "@/types/siteConfig";
 
 type ProductCardProps = {
-  product: Product;
+  product: ProductItem;
 };
 
 export function ProductCard({ product }: ProductCardProps) {

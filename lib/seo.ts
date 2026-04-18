@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 
+import { defaultSiteConfig } from "@/models/defaultSiteConfig";
+
 export const siteConfig = {
-  name: "LOMAS AI",
-  description:
-    "LOMAS AI builds intelligent learning experiences for schools, educators, and modern classrooms across India.",
+  name: defaultSiteConfig.content.siteName,
+  description: defaultSiteConfig.content.siteDescription,
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://lomas-ai.vercel.app",
-  email: "hello@lomasai.in"
+  email: defaultSiteConfig.footer.email
 };
 
 type MetadataOptions = {

@@ -3,7 +3,9 @@ import { Manrope, Space_Grotesk } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { ThemeRuntime } from "@/components/layout/ThemeRuntime";
 import { createMetadata, siteConfig } from "@/lib/seo";
+import { getSiteConfig } from "@/services/siteConfigStore";
 
 import "./globals.css";
 
@@ -25,17 +27,23 @@ export const metadata: Metadata = createMetadata({
   path: "/"
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getSiteConfig();
+
   return (
     <html lang="en" className={`${manrope.variable} ${spaceGrotesk.variable}`}>
       <body className="flex min-h-screen flex-col">
-        <Navbar />
+        <ThemeRuntime theme={config.theme} />
+        <Navbar
+          navigation={config.content.navigation.items}
+          brandName={config.footer.brandName}
+        />
         <div className="flex-1">{children}</div>
-        <Footer />
+        <Footer footer={config.footer} />
       </body>
     </html>
   );

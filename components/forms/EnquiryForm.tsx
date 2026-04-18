@@ -10,8 +10,13 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { submitEnquiry } from "@/lib/enquiry";
 import { type EnquiryInput, enquirySchema } from "@/lib/validation";
+import type { ContactPageContent } from "@/types/siteConfig";
 
-export function EnquiryForm() {
+type EnquiryFormProps = {
+  formConfig: ContactPageContent["form"];
+};
+
+export function EnquiryForm({ formConfig }: EnquiryFormProps) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -58,11 +63,11 @@ export function EnquiryForm() {
           htmlFor="name"
           className="mb-2 block text-sm font-semibold text-ink-800"
         >
-          Name
+          {formConfig.fields.nameLabel}
         </label>
         <Input
           id="name"
-          placeholder="Your full name"
+          placeholder={formConfig.fields.namePlaceholder}
           aria-invalid={Boolean(errors.name)}
           {...register("name")}
         />
@@ -76,12 +81,12 @@ export function EnquiryForm() {
           htmlFor="email"
           className="mb-2 block text-sm font-semibold text-ink-800"
         >
-          Email
+          {formConfig.fields.emailLabel}
         </label>
         <Input
           id="email"
           type="email"
-          placeholder="name@school.edu"
+          placeholder={formConfig.fields.emailPlaceholder}
           aria-invalid={Boolean(errors.email)}
           {...register("email")}
         />
@@ -95,11 +100,11 @@ export function EnquiryForm() {
           htmlFor="address"
           className="mb-2 block text-sm font-semibold text-ink-800"
         >
-          Address
+          {formConfig.fields.addressLabel}
         </label>
         <Input
           id="address"
-          placeholder="Institution or mailing address"
+          placeholder={formConfig.fields.addressPlaceholder}
           aria-invalid={Boolean(errors.address)}
           {...register("address")}
         />
@@ -113,11 +118,11 @@ export function EnquiryForm() {
           htmlFor="purpose"
           className="mb-2 block text-sm font-semibold text-ink-800"
         >
-          Purpose
+          {formConfig.fields.purposeLabel}
         </label>
         <Textarea
           id="purpose"
-          placeholder="Tell us about your institution, use case, or partnership objective."
+          placeholder={formConfig.fields.purposePlaceholder}
           aria-invalid={Boolean(errors.purpose)}
           {...register("purpose")}
         />
@@ -151,7 +156,7 @@ export function EnquiryForm() {
             Sending enquiry...
           </>
         ) : (
-          "Send Enquiry"
+          formConfig.submitLabel
         )}
       </Button>
     </form>

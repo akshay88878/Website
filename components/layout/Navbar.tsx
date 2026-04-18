@@ -6,10 +6,15 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { SiteLogo } from "@/components/layout/SiteLogo";
-import { navigationItems } from "@/data/site";
 import { cn } from "@/lib/utils";
+import type { NavigationItem } from "@/types/siteConfig";
 
-export function Navbar() {
+type NavbarProps = {
+  navigation: NavigationItem[];
+  brandName: string;
+};
+
+export function Navbar({ navigation, brandName }: NavbarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,6 +28,7 @@ export function Navbar() {
         <div className="flex h-20 items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <SiteLogo
+              brandName={brandName}
               priority
               imageClassName="h-12 w-12 rounded-xl"
               textClassName="text-base tracking-[0.18em] sm:text-lg"
@@ -30,13 +36,13 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden items-center gap-2 md:flex">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href;
+            {navigation.map((item) => {
+              const isActive = pathname === item.url;
 
               return (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={item.url}
+                  href={item.url}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700",
                     isActive && "bg-brand-50 text-brand-700"
@@ -68,13 +74,13 @@ export function Navbar() {
       >
         <div className="container py-4">
           <nav className="flex flex-col gap-2">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href;
+            {navigation.map((item) => {
+              const isActive = pathname === item.url;
 
               return (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={item.url}
+                  href={item.url}
                   className={cn(
                     "rounded-2xl px-4 py-3 text-sm font-medium text-ink-600 transition hover:bg-brand-50 hover:text-brand-700",
                     isActive && "bg-brand-50 text-brand-700"

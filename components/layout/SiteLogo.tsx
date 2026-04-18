@@ -7,13 +7,15 @@ type SiteLogoProps = {
   imageClassName?: string;
   textClassName?: string;
   priority?: boolean;
+  brandName?: string;
 };
 
 export function SiteLogo({
   className,
   imageClassName,
   textClassName,
-  priority = false
+  priority = false,
+  brandName = "LOMAS AI"
 }: SiteLogoProps) {
   return (
     <span className={cn("flex items-center gap-3", className)}>
@@ -38,7 +40,7 @@ export function SiteLogo({
           textClassName
         )}
       >
-        LOMAS AI
+        {brandName}
       </span>
     </span>
   );

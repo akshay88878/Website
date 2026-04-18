@@ -1,0 +1,120 @@
+ ⨯ Error: Cannot find module './vendor-chunks/zod.js'
+Require stack:
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\webpack-runtime.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\pages\_document.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\lib\start-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\cli\next-start.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\lib\\start-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\cli\\next-start.js'
+  ]
+}
+ ⨯ Error: Cannot find module './vendor-chunks/zod.js'
+Require stack:
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\webpack-runtime.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\pages\_document.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\lib\start-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\cli\next-start.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\lib\\start-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\cli\\next-start.js'
+  ]
+}
+ ⨯ Error: Cannot find module './vendor-chunks/zod.js'
+Require stack:
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\webpack-runtime.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\pages\_document.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\lib\start-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\cli\next-start.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\lib\\start-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\cli\\next-start.js'
+  ]
+}
+ ⨯ Error: Cannot find module './vendor-chunks/zod.js'
+Require stack:
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\webpack-runtime.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\.next\server\pages\_document.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\next.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\lib\start-server.js
+- C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\cli\next-start.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (C:\Users\Akshay_CSE\Desktop\LomasAI\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\next.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\server\\lib\\start-server.js',
+    'C:\\Users\\Akshay_CSE\\Desktop\\LomasAI\\node_modules\\next\\dist\\cli\\next-start.js'
+  ]
+}
