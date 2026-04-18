@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { FileJson, LayoutTemplate, Plus, Trash2 } from "lucide-react";
 
+import { FirebaseImageField } from "@/components/admin/FirebaseImageField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -454,12 +455,14 @@ function TeamListEditor({
                 }
               />
             </Field>
-            <Field label="Image path">
-              <Input
+            <Field label="Image" hint="Upload to Firebase Storage or paste an image URL.">
+              <FirebaseImageField
                 value={item.image}
-                onChange={(event) =>
-                  onChange(replaceAt(items, index, { ...item, image: event.target.value }))
+                onChange={(value) =>
+                  onChange(replaceAt(items, index, { ...item, image: value }))
                 }
+                uploadPath={`site-assets/team/member-${index + 1}`}
+                previewAlt={item.name || `Team member ${index + 1}`}
               />
             </Field>
           </div>
@@ -643,12 +646,15 @@ export function SiteConfigForm({
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Hero illustration source">
-                <Input
+              <Field
+                label="Hero illustration"
+                hint="Upload directly to Firebase Storage or keep using a manual URL."
+              >
+                <FirebaseImageField
                   value={config.content.hero.illustrationSrc}
-                  onChange={(event) =>
-                    updateField(["content", "hero", "illustrationSrc"], event.target.value)
-                  }
+                  onChange={(value) => updateField(["content", "hero", "illustrationSrc"], value)}
+                  uploadPath="site-assets/hero"
+                  previewAlt={config.content.hero.illustrationAlt || "Hero illustration"}
                 />
               </Field>
               <Field label="Hero illustration alt text">
@@ -838,12 +844,15 @@ export function SiteConfigForm({
                     }
                   />
                 </Field>
-                <Field label="Blog image source">
-                  <Input
+                <Field
+                  label="Blog image"
+                  hint="Upload to Firebase Storage or enter an existing image URL."
+                >
+                  <FirebaseImageField
                     value={config.content.blogPage.imageSrc}
-                    onChange={(event) =>
-                      updateField(["content", "blogPage", "imageSrc"], event.target.value)
-                    }
+                    onChange={(value) => updateField(["content", "blogPage", "imageSrc"], value)}
+                    uploadPath="site-assets/blog"
+                    previewAlt={config.content.blogPage.imageAlt || "Blog image"}
                   />
                 </Field>
                 <Field label="Blog image alt text">

@@ -41,6 +41,11 @@ public/
 - `firebase` for Firestore submissions
 - `mongodb` for API-based MongoDB submissions
 
+## Media Uploads
+- Image fields in `/admin` can upload directly to Firebase Storage.
+- The uploaded download URL is written back into the centralized site config.
+- Firebase Storage rules must allow authenticated admin users to upload and read those files.
+
 ## Admin Auth
 - Firebase email/password login is used automatically on `/admin` when the Firebase web config is present.
 - Set `ADMIN_JWT_SECRET` to a long random secret because the admin API still uses a server-issued session cookie.
