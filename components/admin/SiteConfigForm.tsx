@@ -4,6 +4,10 @@ import type { ReactNode } from "react";
 
 import { FileJson, LayoutTemplate, Plus, Trash2 } from "lucide-react";
 
+import {
+  adminEditorSections,
+  type AdminEditorSectionId
+} from "@/components/admin/adminSections";
 import { FirebaseImageField } from "@/components/admin/FirebaseImageField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -25,9 +29,11 @@ export type EditorMode = "form" | "json";
 
 type SiteConfigFormProps = {
   config: SiteConfig;
+  activeSection: AdminEditorSectionId;
   editorMode: EditorMode;
   editorValue: string;
   onChange: (nextConfig: SiteConfig) => void;
+  onActiveSectionChange: (section: AdminEditorSectionId) => void;
   onEditorModeChange: (mode: EditorMode) => void;
   onJsonChange: (value: string) => void;
 };
@@ -474,14 +480,18 @@ function TeamListEditor({
 
 export function SiteConfigForm({
   config,
+  activeSection,
   editorMode,
   editorValue,
   onChange,
+  onActiveSectionChange,
   onEditorModeChange,
   onJsonChange
 }: SiteConfigFormProps) {
   const heroSection = getSection(config, "hero");
   const highlightsSection = getSection(config, "highlights");
+  const activeSectionConfig =
+    adminEditorSections.find((section) => section.id === activeSection) ?? adminEditorSections[0];
 
   const updateField = (path: string[], value: unknown) => onChange(setField(config, path, value));
   const updateSection = (type: HomeSectionType, nextSection: SectionConfig) =>
@@ -523,6 +533,50 @@ export function SiteConfigForm({
             </Button>
           </div>
         </div>
+
+        {editorMode === "form" ? (
+          <div className="mt-6 space-y-4 border-t border-surface-border pt-6">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[var(--theme-primary)]">
+                Edit By Section
+              </p>
+              <p className="mt-2 text-sm text-ink-600">
+                Choose the page section from the top row and edit only that area.
+              </p>
+            </div>
+
+            <div className="-mx-1 overflow-x-auto px-1 pb-1">
+              <div className="flex w-max min-w-full gap-3">
+              {adminEditorSections.map((section) => {
+                const isActive = section.id === activeSection;
+
+                return (
+                  <button
+                    key={section.id}
+                    type="button"
+                    className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-3 text-sm font-semibold transition-all duration-200 ${
+                      isActive
+                        ? "border-[var(--theme-primary-border)] bg-[var(--theme-primary-soft)] shadow-soft"
+                        : "border-surface-border bg-white hover:border-[color:var(--theme-primary-border)] hover:bg-surface-subtle"
+                    }`}
+                    onClick={() => onActiveSectionChange(section.id)}
+                  >
+                    {section.label}
+                  </button>
+                );
+              })}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-surface-border bg-surface-subtle p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--theme-primary)]">
+                Current Section
+              </p>
+              <h3 className="mt-2 text-lg font-bold">{activeSectionConfig.label}</h3>
+              <p className="mt-2 text-sm text-ink-600">{activeSectionConfig.description}</p>
+            </div>
+          </div>
+        ) : null}
       </Card>
 
       {editorMode === "json" ? (
@@ -539,10 +593,11 @@ export function SiteConfigForm({
         </EditorCard>
       ) : (
         <>
-          <EditorCard
-            title="Brand & Navigation"
-            description="Manage the site identity copy and the header navigation links."
-          >
+          {activeSection === "home" ? (
+            <EditorCard
+              title="Brand & Navigation"
+              description="Manage the site identity copy and the header navigation links."
+            >
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Site name">
                 <Input
@@ -566,12 +621,14 @@ export function SiteConfigForm({
               items={config.content.navigation.items}
               onChange={(items) => updateField(["content", "navigation", "items"], items)}
             />
-          </EditorCard>
+            </EditorCard>
+          ) : null}
 
-          <EditorCard
-            title="Homepage"
-            description="Configure homepage structure, hero messaging, and highlights."
-          >
+          {activeSection === "home" ? (
+            <EditorCard
+              title="Homepage"
+              description="Configure homepage structure, hero messaging, and highlights."
+            >
             <SectionControl
               section={heroSection}
               onChange={(section) => updateSection("hero", section)}
@@ -748,12 +805,14 @@ export function SiteConfigForm({
                 className="min-h-[180px]"
               />
             </Field>
-          </EditorCard>
+            </EditorCard>
+          ) : null}
 
-          <EditorCard
-            title="Products & Blog"
-            description="Edit products page structure and the blog landing page content."
-          >
+          {activeSection === "products" ? (
+            <EditorCard
+              title="Products"
+              description="Edit the products page SEO, structure, and product cards."
+            >
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Products meta title">
                 <Input
@@ -802,12 +861,65 @@ export function SiteConfigForm({
               />
             </Field>
 
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Product card eyebrow">
+                <Input
+                  value={config.content.productsPage.cardLabels.eyebrow}
+                  onChange={(event) =>
+                    updateField(
+                      ["content", "productsPage", "cardLabels", "eyebrow"],
+                      event.target.value
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Tech stack heading">
+                <Input
+                  value={config.content.productsPage.cardLabels.techStackHeading}
+                  onChange={(event) =>
+                    updateField(
+                      ["content", "productsPage", "cardLabels", "techStackHeading"],
+                      event.target.value
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Features heading">
+                <Input
+                  value={config.content.productsPage.cardLabels.featuresHeading}
+                  onChange={(event) =>
+                    updateField(
+                      ["content", "productsPage", "cardLabels", "featuresHeading"],
+                      event.target.value
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Use case heading">
+                <Input
+                  value={config.content.productsPage.cardLabels.useCaseHeading}
+                  onChange={(event) =>
+                    updateField(
+                      ["content", "productsPage", "cardLabels", "useCaseHeading"],
+                      event.target.value
+                    )
+                  }
+                />
+              </Field>
+            </div>
+
             <ProductListEditor
               items={config.content.productsPage.products}
               onChange={(items) => updateField(["content", "productsPage", "products"], items)}
             />
+            </EditorCard>
+          ) : null}
 
-            <div className="border-t border-surface-border pt-5">
+          {activeSection === "blogs" ? (
+            <EditorCard
+              title="Blogs"
+              description="Edit the blog page SEO, article copy, and cover image."
+            >
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="Blog meta title">
                   <Input
@@ -821,10 +933,7 @@ export function SiteConfigForm({
                   <Input
                     value={config.content.blogPage.metaDescription}
                     onChange={(event) =>
-                      updateField(
-                        ["content", "blogPage", "metaDescription"],
-                        event.target.value
-                      )
+                      updateField(["content", "blogPage", "metaDescription"], event.target.value)
                     }
                   />
                 </Field>
@@ -874,16 +983,17 @@ export function SiteConfigForm({
                       parseLines(event.target.value)
                     )
                   }
-                  className="mt-5 min-h-[200px]"
+                  className="min-h-[220px]"
                 />
               </Field>
-            </div>
-          </EditorCard>
+            </EditorCard>
+          ) : null}
 
-          <EditorCard
-            title="About"
-            description="Manage About page SEO, company vision, leadership message, and team."
-          >
+          {activeSection === "about" ? (
+            <EditorCard
+              title="About"
+              description="Manage About page SEO, company vision, leadership message, and team."
+            >
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="About meta title">
                 <Input
@@ -990,12 +1100,14 @@ export function SiteConfigForm({
               items={config.content.aboutPage.team.members}
               onChange={(items) => updateField(["content", "aboutPage", "team", "members"], items)}
             />
-          </EditorCard>
+            </EditorCard>
+          ) : null}
 
-          <EditorCard
-            title="Contact"
-            description="Update contact page SEO, company details, social links, and form labels."
-          >
+          {activeSection === "contact" ? (
+            <EditorCard
+              title="Contact"
+              description="Update contact page SEO, company details, social links, and form labels."
+            >
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Contact meta title">
                 <Input
@@ -1163,12 +1275,14 @@ export function SiteConfigForm({
                 </Field>
               ))}
             </div>
-          </EditorCard>
+            </EditorCard>
+          ) : null}
 
-          <EditorCard
-            title="Footer & Theme"
-            description="Control footer contact blocks and the site-wide visual system."
-          >
+          {activeSection === "home" ? (
+            <EditorCard
+              title="Footer & Theme"
+              description="Control footer contact blocks and the site-wide visual system."
+            >
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Footer brand name">
                 <Input
@@ -1290,7 +1404,8 @@ export function SiteConfigForm({
               items={config.footer.links}
               onChange={(items) => updateField(["footer", "links"], items)}
             />
-          </EditorCard>
+            </EditorCard>
+          ) : null}
         </>
       )}
     </div>

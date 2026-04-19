@@ -12,15 +12,17 @@ import type { NavigationItem } from "@/types/siteConfig";
 type NavbarProps = {
   navigation: NavigationItem[];
   brandName: string;
+  activePath?: string;
 };
 
-export function Navbar({ navigation, brandName }: NavbarProps) {
+export function Navbar({ navigation, brandName, activePath }: NavbarProps) {
   const pathname = usePathname();
+  const currentPath = activePath ?? pathname;
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setIsOpen(false);
-  }, [pathname]);
+  }, [currentPath]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
@@ -37,7 +39,7 @@ export function Navbar({ navigation, brandName }: NavbarProps) {
 
           <nav className="hidden items-center gap-2 md:flex">
             {navigation.map((item) => {
-              const isActive = pathname === item.url;
+              const isActive = currentPath === item.url;
 
               return (
                 <Link
@@ -75,7 +77,7 @@ export function Navbar({ navigation, brandName }: NavbarProps) {
         <div className="container py-4">
           <nav className="flex flex-col gap-2">
             {navigation.map((item) => {
-              const isActive = pathname === item.url;
+              const isActive = currentPath === item.url;
 
               return (
                 <Link

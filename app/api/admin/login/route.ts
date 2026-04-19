@@ -9,11 +9,7 @@ import {
   isAdminAuthConfigured,
   verifyAdminPassword
 } from "@/services/adminPassword";
-import {
-  ADMIN_SESSION_COOKIE,
-  createAdminSessionToken,
-  getAdminSessionCookieOptions
-} from "@/services/adminSession";
+import { createAdminSessionToken } from "@/services/adminSession";
 
 const passwordLoginSchema = z.object({
   password: z.string().min(1, "Password is required.")
@@ -57,17 +53,11 @@ export async function POST(request: Request) {
       uid: verifiedIdentity.identity.uid,
       email: verifiedIdentity.identity.email ?? undefined
     });
-    const response = NextResponse.json({
-      success: true
+
+    return NextResponse.json({
+      success: true,
+      sessionToken: token
     });
-
-    response.cookies.set(
-      ADMIN_SESSION_COOKIE,
-      token,
-      getAdminSessionCookieOptions()
-    );
-
-    return response;
   }
 
   const passwordParsed = passwordLoginSchema.safeParse(payload);
@@ -108,15 +98,9 @@ export async function POST(request: Request) {
   const token = await createAdminSessionToken({
     provider: "password"
   });
-  const response = NextResponse.json({
-    success: true
+
+  return NextResponse.json({
+    success: true,
+    sessionToken: token
   });
-
-  response.cookies.set(
-    ADMIN_SESSION_COOKIE,
-    token,
-    getAdminSessionCookieOptions()
-  );
-
-  return response;
 }

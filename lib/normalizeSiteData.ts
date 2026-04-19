@@ -54,6 +54,12 @@ const siteConfigSchema = z.object({
       eyebrow: z.string().min(1),
       title: z.string().min(1),
       description: z.string().min(1),
+      cardLabels: z.object({
+        eyebrow: z.string().min(1),
+        techStackHeading: z.string().min(1),
+        featuresHeading: z.string().min(1),
+        useCaseHeading: z.string().min(1)
+      }),
       products: z.array(
         z.object({
           title: z.string().min(1),

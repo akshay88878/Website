@@ -1,10 +1,19 @@
 "use client";
 
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { signInWithEmailAndPassword, signOut as firebaseSignOut } from "firebase/auth";
+import {
+  inMemoryPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut
+} from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { Loader2, LogOut, Save } from "lucide-react";
 
+import {
+  adminEditorSections,
+  type AdminEditorSectionId
+} from "@/components/admin/adminSections";
 import { SiteConfigForm, type EditorMode } from "@/components/admin/SiteConfigForm";
 import { SiteConfigPreview } from "@/components/admin/SiteConfigPreview";
 import { Button } from "@/components/ui/Button";
@@ -25,14 +34,29 @@ type ConfigResponse = {
   message?: string;
 };
 
+type LoginResponse = {
+  success: boolean;
+  sessionToken?: string;
+  message?: string;
+};
+
 function getMessageClassName(tone: MessageTone) {
   return tone === "error"
     ? "rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
     : "rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700";
 }
 
+function getAuthorizedHeaders(sessionToken: string, headers: Record<string, string> = {}) {
+  return {
+    Authorization: `Bearer ${sessionToken}`,
+    ...headers
+  };
+}
+
 export function AdminPanel() {
   const [status, setStatus] = useState<AdminStatus>("loading");
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<AdminEditorSectionId>("home");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
@@ -47,49 +71,114 @@ export function AdminPanel() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const usesFirebaseLogin = hasFirebaseConfig();
+  const activeEditorSection =
+    adminEditorSections.find((section) => section.id === activeSection) ?? adminEditorSections[0];
 
-  async function loadConfig() {
+  function resetAdminAccess(nextMessage?: string, tone: MessageTone = "success") {
+    setSessionToken(null);
+    setActiveSection("home");
+    setStatus("unauthorized");
+    setEmail("");
+    setPassword("");
+    setEditorValue("");
+    setDraftConfig(null);
+    setPreviewConfig(null);
+    setParseError(null);
+    setSource(null);
+    setMessageTone(tone);
+    setMessage(nextMessage ?? null);
+  }
+
+  async function loadConfig(activeSessionToken = sessionToken) {
+    if (!activeSessionToken) {
+      resetAdminAccess();
+      return;
+    }
+
     setStatus("loading");
     setMessage(null);
 
-    const response = await fetch("/api/admin/config", {
-      cache: "no-store"
-    });
+    try {
+      const response = await fetch("/api/admin/config", {
+        cache: "no-store",
+        headers: getAuthorizedHeaders(activeSessionToken)
+      });
 
-    if (response.status === 401) {
-      setStatus("unauthorized");
-      return;
+      if (response.status === 401) {
+        resetAdminAccess("Your admin session expired. Sign in again.", "error");
+        return;
+      }
+
+      const result = (await response.json()) as ConfigResponse;
+
+      if (!response.ok || !result.data) {
+        setStatus("unauthorized");
+        setMessageTone("error");
+        setMessage(result.message || "Unable to load the admin config.");
+        return;
+      }
+
+      const parsed = parseSiteConfig(result.data);
+
+      if (!parsed.success) {
+        setStatus("unauthorized");
+        setMessageTone("error");
+        setMessage(parsed.message);
+        return;
+      }
+
+      setDraftConfig(parsed.data);
+      setPreviewConfig(parsed.data);
+      setEditorValue(JSON.stringify(parsed.data, null, 2));
+      setSource(result.source || null);
+      setParseError(null);
+      setStatus("ready");
+    } catch (error) {
+      resetAdminAccess(
+        error instanceof Error ? error.message : "Unable to load the admin config.",
+        "error"
+      );
     }
-
-    const result = (await response.json()) as ConfigResponse;
-
-    if (!response.ok || !result.data) {
-      setStatus("unauthorized");
-      setMessageTone("error");
-      setMessage(result.message || "Unable to load the admin config.");
-      return;
-    }
-
-    const parsed = parseSiteConfig(result.data);
-
-    if (!parsed.success) {
-      setStatus("unauthorized");
-      setMessageTone("error");
-      setMessage(parsed.message);
-      return;
-    }
-
-    setDraftConfig(parsed.data);
-    setPreviewConfig(parsed.data);
-    setEditorValue(JSON.stringify(parsed.data, null, 2));
-    setSource(result.source || null);
-    setParseError(null);
-    setStatus("ready");
   }
 
   useEffect(() => {
-    void loadConfig();
-  }, []);
+    let isMounted = true;
+
+    async function initializeAdminAccess() {
+      let nextMessage: string | undefined;
+      let nextTone: MessageTone = "success";
+
+      if (usesFirebaseLogin) {
+        try {
+          const firebaseAuth = getFirebaseAuth();
+
+          await setPersistence(firebaseAuth, inMemoryPersistence);
+
+          if (firebaseAuth.currentUser) {
+            await firebaseSignOut(firebaseAuth).catch(() => undefined);
+          }
+        } catch (error) {
+          if (!isMounted) {
+            return;
+          }
+
+          nextTone = "error";
+          nextMessage =
+            error instanceof Error ? error.message : "Unable to prepare Firebase admin access.";
+        }
+      }
+
+      if (isMounted) {
+        resetAdminAccess(nextMessage, nextTone);
+      }
+    }
+
+    void initializeAdminAccess();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [usesFirebaseLogin]);
 
   function handleFormChange(nextConfig: SiteConfig) {
     setMessage(null);
@@ -145,6 +234,8 @@ export function AdminPanel() {
       let response: Response;
 
       if (firebaseAuth) {
+        await setPersistence(firebaseAuth, inMemoryPersistence);
+
         const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
         const idToken = await credential.user.getIdToken();
 
@@ -165,9 +256,9 @@ export function AdminPanel() {
         });
       }
 
-      const result = (await response.json()) as ConfigResponse;
+      const result = (await response.json()) as LoginResponse;
 
-      if (!response.ok) {
+      if (!response.ok || !result.sessionToken) {
         if (firebaseAuth?.currentUser) {
           await firebaseSignOut(firebaseAuth).catch(() => undefined);
         }
@@ -179,7 +270,8 @@ export function AdminPanel() {
 
       setEmail("");
       setPassword("");
-      await loadConfig();
+      setSessionToken(result.sessionToken);
+      await loadConfig(result.sessionToken);
     } catch (error) {
       if (firebaseAuth?.currentUser) {
         await firebaseSignOut(firebaseAuth).catch(() => undefined);
@@ -201,13 +293,16 @@ export function AdminPanel() {
     setMessage(null);
 
     try {
+      if (!sessionToken) {
+        resetAdminAccess("Your admin session expired. Sign in again.", "error");
+        return;
+      }
+
       if (usesFirebaseLogin) {
         const firebaseAuth = getFirebaseAuth();
 
         if (!firebaseAuth.currentUser) {
-          setMessageTone("error");
-          setMessage("Your Firebase admin session has expired. Sign in again.");
-          setStatus("unauthorized");
+          resetAdminAccess("Your Firebase admin session has expired. Sign in again.", "error");
           return;
         }
 
@@ -227,19 +322,24 @@ export function AdminPanel() {
         setParseError(null);
         setMessageTone("success");
         setMessage("Configuration saved successfully (firebase).");
-        await loadConfig();
+        await loadConfig(sessionToken);
         return;
       }
 
       const response = await fetch("/api/admin/config", {
         method: "POST",
-        headers: {
+        headers: getAuthorizedHeaders(sessionToken, {
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify(draftConfig)
       });
 
       const result = (await response.json()) as ConfigResponse;
+
+      if (response.status === 401) {
+        resetAdminAccess("Your admin session expired. Sign in again.", "error");
+        return;
+      }
 
       if (!response.ok || !result.data) {
         setMessageTone("error");
@@ -272,21 +372,13 @@ export function AdminPanel() {
   async function handleLogout() {
     await fetch("/api/admin/logout", {
       method: "POST"
-    });
+    }).catch(() => undefined);
 
     if (usesFirebaseLogin) {
       await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
     }
 
-    setStatus("unauthorized");
-    setMessageTone("success");
-    setMessage("Signed out.");
-    setEmail("");
-    setPassword("");
-    setEditorValue("");
-    setDraftConfig(null);
-    setPreviewConfig(null);
-    setParseError(null);
+    resetAdminAccess("Signed out.");
   }
 
   if (status === "loading") {
@@ -424,13 +516,15 @@ export function AdminPanel() {
         </div>
       ) : null}
 
-      <div className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(360px,0.98fr)]">
         {draftConfig ? (
           <SiteConfigForm
             config={draftConfig}
+            activeSection={activeSection}
             editorMode={editorMode}
             editorValue={editorValue}
             onChange={handleFormChange}
+            onActiveSectionChange={setActiveSection}
             onEditorModeChange={setEditorMode}
             onJsonChange={handleEditorChange}
           />
@@ -443,16 +537,18 @@ export function AdminPanel() {
           </Card>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-6 lg:sticky lg:top-24">
           <Card className="p-6">
             <h2 className="text-xl font-bold">Live Preview</h2>
             <p className="mt-2 text-sm">
-              Preview reflects the last valid normalized draft for homepage sections, theme,
-              and footer content.
+              Showing the {activeEditorSection.label} page using the current draft structure and
+              formatting.
             </p>
           </Card>
 
-          {previewConfig ? <SiteConfigPreview config={previewConfig} /> : null}
+          {previewConfig ? (
+            <SiteConfigPreview config={previewConfig} activeSection={activeSection} />
+          ) : null}
         </div>
       </div>
     </div>

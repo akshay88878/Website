@@ -1,19 +1,7 @@
 import { NextResponse } from "next/server";
 
-import {
-  ADMIN_SESSION_COOKIE,
-  getAdminSessionCookieOptions
-} from "@/services/adminSession";
-
 export async function POST() {
-  const response = NextResponse.json({
+  return NextResponse.json({
     success: true
   });
-
-  response.cookies.set(ADMIN_SESSION_COOKIE, "", {
-    ...getAdminSessionCookieOptions(),
-    maxAge: 0
-  });
-
-  return response;
 }

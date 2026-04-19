@@ -74,6 +74,12 @@ export interface ProductsPageContent {
   eyebrow: string;
   title: string;
   description: string;
+  cardLabels: {
+    eyebrow: string;
+    techStackHeading: string;
+    featuresHeading: string;
+    useCaseHeading: string;
+  };
   products: ProductItem[];
 }
 

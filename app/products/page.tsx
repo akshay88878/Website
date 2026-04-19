@@ -31,7 +31,11 @@ export default async function ProductsPage() {
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {pageContent.products.map((product) => (
-            <ProductCard key={product.title} product={product} />
+            <ProductCard
+              key={product.title}
+              product={product}
+              labels={pageContent.cardLabels}
+            />
           ))}
         </div>
       </section>

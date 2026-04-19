@@ -64,6 +64,12 @@ export const defaultSiteConfig: SiteConfig = {
       title: "Intelligent products for modern education delivery",
       description:
         "Our platform and hardware experiences are designed to support scalable AI adoption across institutions, classrooms, and student engagement programs.",
+      cardLabels: {
+        eyebrow: "Product",
+        techStackHeading: "Tech Stack",
+        featuresHeading: "Features",
+        useCaseHeading: "Use Case"
+      },
       products: [
         {
           title: "AI Teaching System",

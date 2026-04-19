@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
+import { verifyAdminRequest } from "@/services/adminSession";
 import {
   getSiteConfigWithSource,
   saveSiteConfig
@@ -8,7 +9,23 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+function createUnauthorizedResponse() {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Unauthorized"
+    },
+    { status: 401 }
+  );
+}
+
+export async function GET(request: Request) {
+  const adminSession = await verifyAdminRequest(request);
+
+  if (!adminSession) {
+    return createUnauthorizedResponse();
+  }
+
   const { config, source } = await getSiteConfigWithSource();
 
   return NextResponse.json({
@@ -19,6 +36,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const adminSession = await verifyAdminRequest(request);
+
+  if (!adminSession) {
+    return createUnauthorizedResponse();
+  }
+
   const payload = await request.json().catch(() => null);
 
   if (!payload) {

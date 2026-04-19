@@ -1,12 +1,16 @@
+import type { JWTPayload } from "jose";
 import { jwtVerify, SignJWT } from "jose";
-
-export const ADMIN_SESSION_COOKIE = "lomas_admin_session";
 
 type AdminSessionPayload = {
   provider?: "firebase" | "password";
   uid?: string;
   email?: string;
 };
+
+type VerifiedAdminSession = JWTPayload &
+  AdminSessionPayload & {
+    role: "admin";
+  };
 
 function getJwtSecret() {
   const secret = process.env.ADMIN_JWT_SECRET;
@@ -30,25 +34,38 @@ export async function createAdminSessionToken(payload: AdminSessionPayload = {})
     .sign(getJwtSecret());
 }
 
-export async function verifyAdminSessionToken(token?: string) {
+export async function verifyAdminSessionToken(
+  token?: string
+): Promise<VerifiedAdminSession | null> {
   if (!token) {
-    return false;
+    return null;
   }
 
   try {
     const { payload } = await jwtVerify(token, getJwtSecret());
-    return payload.role === "admin";
+
+    if (payload.role !== "admin") {
+      return null;
+    }
+
+    return payload as VerifiedAdminSession;
   } catch {
-    return false;
+    return null;
   }
 }
 
-export function getAdminSessionCookieOptions() {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge: 60 * 60 * 12
-  };
+export function getAdminSessionTokenFromRequest(request: Request) {
+  const authorizationHeader = request.headers.get("authorization");
+
+  if (!authorizationHeader?.startsWith("Bearer ")) {
+    return undefined;
+  }
+
+  const token = authorizationHeader.slice("Bearer ".length).trim();
+
+  return token || undefined;
+}
+
+export async function verifyAdminRequest(request: Request) {
+  return verifyAdminSessionToken(getAdminSessionTokenFromRequest(request));
 }

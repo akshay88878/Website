@@ -1,17 +1,18 @@
 import { Card } from "@/components/ui/Card";
-import type { ProductItem } from "@/types/siteConfig";
+import type { ProductItem, ProductsPageContent } from "@/types/siteConfig";
 
 type ProductCardProps = {
   product: ProductItem;
+  labels: ProductsPageContent["cardLabels"];
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, labels }: ProductCardProps) {
   return (
     <Card className="group h-full p-8 hover:-translate-y-1">
       <div className="flex h-full flex-col">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
-            Product
+            {labels.eyebrow}
           </p>
           <h2 className="mt-4 text-2xl font-bold">{product.title}</h2>
           <p className="mt-4 text-base text-ink-600">{product.description}</p>
@@ -20,7 +21,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-8 flex flex-1 flex-col gap-6">
           <section>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
-              Tech Stack
+              {labels.techStackHeading}
             </h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {product.techStack.map((item) => (
@@ -36,7 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <section>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
-              Features
+              {labels.featuresHeading}
             </h3>
             <ul className="mt-3 space-y-2 text-sm text-ink-600">
               {product.features.map((feature) => (
@@ -50,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <section>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
-              Use Case
+              {labels.useCaseHeading}
             </h3>
             <p className="mt-3 text-sm text-ink-600">{product.useCase}</p>
           </section>
