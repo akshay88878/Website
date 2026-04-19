@@ -46,6 +46,11 @@ public/
 - The uploaded download URL is written back into the centralized site config.
 - Firebase Storage rules must allow authenticated admin users to upload and read those files.
 
+## Site Config Storage
+- When Firebase config is present, the centralized site config is read from Firestore document `site_configs/default-site-config`.
+- In Firebase mode, `/admin` saves the site config directly to Firestore instead of the local `storage/site-config.json` file.
+- Firestore rules must allow public reads for the site config document and authenticated admin writes for `/admin`.
+
 ## Admin Auth
 - Firebase email/password login is used automatically on `/admin` when the Firebase web config is present.
 - Set `ADMIN_JWT_SECRET` to a long random secret because the admin API still uses a server-issued session cookie.

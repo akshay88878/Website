@@ -1,6 +1,7 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getFirestore as getLiteFirestore } from "firebase/firestore/lite";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -30,6 +31,10 @@ export function getFirebaseAuth() {
 
 export function getFirebaseDb() {
   return getFirestore(getFirebaseApp());
+}
+
+export function getFirebaseServerDb() {
+  return getLiteFirestore(getFirebaseApp());
 }
 
 export function getFirebaseStorage() {

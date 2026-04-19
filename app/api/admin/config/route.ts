@@ -31,16 +31,27 @@ export async function POST(request: Request) {
     );
   }
 
-  const { config, source } = await saveSiteConfig(payload);
+  try {
+    const { config, source } = await saveSiteConfig(payload);
 
-  ["/", "/products", "/blogs", "/about-us", "/contact-us", "/admin"].forEach(
-    (route) => revalidatePath(route)
-  );
-  revalidatePath("/", "layout");
+    ["/", "/products", "/blogs", "/about-us", "/contact-us", "/admin"].forEach(
+      (route) => revalidatePath(route)
+    );
+    revalidatePath("/", "layout");
 
-  return NextResponse.json({
-    success: true,
-    source,
-    data: config
-  });
+    return NextResponse.json({
+      success: true,
+      source,
+      data: config
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Unable to save the site configuration."
+      },
+      { status: 503 }
+    );
+  }
 }
