@@ -36,7 +36,6 @@ type ConfigResponse = {
 
 type LoginResponse = {
   success: boolean;
-  sessionToken?: string;
   message?: string;
 };
 
@@ -46,16 +45,8 @@ function getMessageClassName(tone: MessageTone) {
     : "rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700";
 }
 
-function getAuthorizedHeaders(sessionToken: string, headers: Record<string, string> = {}) {
-  return {
-    Authorization: `Bearer ${sessionToken}`,
-    ...headers
-  };
-}
-
 export function AdminPanel() {
   const [status, setStatus] = useState<AdminStatus>("loading");
-  const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminEditorSectionId>("home");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +66,6 @@ export function AdminPanel() {
     adminEditorSections.find((section) => section.id === activeSection) ?? adminEditorSections[0];
 
   function resetAdminAccess(nextMessage?: string, tone: MessageTone = "success") {
-    setSessionToken(null);
     setActiveSection("home");
     setStatus("unauthorized");
     setEmail("");
@@ -89,8 +79,25 @@ export function AdminPanel() {
     setMessage(nextMessage ?? null);
   }
 
-  async function loadConfig(activeSessionToken = sessionToken) {
-    if (!activeSessionToken) {
+  async function getAdminIdToken() {
+    if (!usesFirebaseLogin) {
+      return null;
+    }
+
+    const currentUser = getFirebaseAuth().currentUser;
+
+    if (!currentUser) {
+      return null;
+    }
+
+    return currentUser.getIdToken();
+  }
+
+  async function loadConfig() {
+    const idToken = await getAdminIdToken();
+
+    if (!idToken) {
+      await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
       resetAdminAccess();
       return;
     }
@@ -101,15 +108,18 @@ export function AdminPanel() {
     try {
       const response = await fetch("/api/admin/config", {
         cache: "no-store",
-        headers: getAuthorizedHeaders(activeSessionToken)
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        }
       });
 
+      const result = (await response.json()) as ConfigResponse;
+
       if (response.status === 401) {
-        resetAdminAccess("Your admin session expired. Sign in again.", "error");
+        await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
+        resetAdminAccess(result.message || "Your admin session expired. Sign in again.", "error");
         return;
       }
-
-      const result = (await response.json()) as ConfigResponse;
 
       if (!response.ok || !result.data) {
         setStatus("unauthorized");
@@ -169,7 +179,10 @@ export function AdminPanel() {
       }
 
       if (isMounted) {
-        resetAdminAccess(nextMessage, nextTone);
+        resetAdminAccess(
+          nextMessage || (!usesFirebaseLogin ? "Firebase admin login is not configured." : undefined),
+          !usesFirebaseLogin ? "error" : nextTone
+        );
       }
     }
 
@@ -228,38 +241,33 @@ export function AdminPanel() {
     setIsAuthenticating(true);
     setMessage(null);
 
-    const firebaseAuth = usesFirebaseLogin ? getFirebaseAuth() : null;
+    if (!usesFirebaseLogin) {
+      setMessageTone("error");
+      setMessage("Firebase admin login is not configured.");
+      setIsAuthenticating(false);
+      return;
+    }
+
+    const firebaseAuth = getFirebaseAuth();
 
     try {
-      let response: Response;
+      await setPersistence(firebaseAuth, inMemoryPersistence);
 
-      if (firebaseAuth) {
-        await setPersistence(firebaseAuth, inMemoryPersistence);
+      const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const idToken = await credential.user.getIdToken();
 
-        const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-        const idToken = await credential.user.getIdToken();
-
-        response = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ idToken })
-        });
-      } else {
-        response = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ password })
-        });
-      }
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ idToken })
+      });
 
       const result = (await response.json()) as LoginResponse;
 
-      if (!response.ok || !result.sessionToken) {
-        if (firebaseAuth?.currentUser) {
+      if (!response.ok || !result.success) {
+        if (firebaseAuth.currentUser) {
           await firebaseSignOut(firebaseAuth).catch(() => undefined);
         }
 
@@ -270,10 +278,9 @@ export function AdminPanel() {
 
       setEmail("");
       setPassword("");
-      setSessionToken(result.sessionToken);
-      await loadConfig(result.sessionToken);
+      await loadConfig();
     } catch (error) {
-      if (firebaseAuth?.currentUser) {
+      if (firebaseAuth.currentUser) {
         await firebaseSignOut(firebaseAuth).catch(() => undefined);
       }
 
@@ -293,76 +300,40 @@ export function AdminPanel() {
     setMessage(null);
 
     try {
-      if (!sessionToken) {
-        resetAdminAccess("Your admin session expired. Sign in again.", "error");
-        return;
-      }
-
-      if (usesFirebaseLogin) {
-        const firebaseAuth = getFirebaseAuth();
-
-        if (!firebaseAuth.currentUser) {
-          resetAdminAccess("Your Firebase admin session has expired. Sign in again.", "error");
-          return;
-        }
-
-        const db = getFirebaseDb();
-
-        await setDoc(
-          doc(db, SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID),
-          {
-            key: SITE_CONFIG_DOCUMENT_ID,
-            config: draftConfig,
-            updatedAt: serverTimestamp()
-          },
-          { merge: true }
-        );
-
-        setSource("firebase");
-        setParseError(null);
-        setMessageTone("success");
-        setMessage("Configuration saved successfully (firebase).");
-        await loadConfig(sessionToken);
-        return;
-      }
-
-      const response = await fetch("/api/admin/config", {
-        method: "POST",
-        headers: getAuthorizedHeaders(sessionToken, {
-          "Content-Type": "application/json"
-        }),
-        body: JSON.stringify(draftConfig)
-      });
-
-      const result = (await response.json()) as ConfigResponse;
-
-      if (response.status === 401) {
-        resetAdminAccess("Your admin session expired. Sign in again.", "error");
-        return;
-      }
-
-      if (!response.ok || !result.data) {
+      if (!usesFirebaseLogin) {
         setMessageTone("error");
-        setMessage(result.message || "Unable to save the configuration.");
+        setMessage("Firebase admin login is not configured.");
         return;
       }
 
-      const parsed = parseSiteConfig(result.data);
+      const firebaseAuth = getFirebaseAuth();
 
-      if (!parsed.success) {
-        setMessageTone("error");
-        setMessage(parsed.message);
+      if (!firebaseAuth.currentUser) {
+        resetAdminAccess("Your Firebase admin session has expired. Sign in again.", "error");
         return;
       }
 
-      setDraftConfig(parsed.data);
-      setPreviewConfig(parsed.data);
-      setEditorValue(JSON.stringify(parsed.data, null, 2));
-      setSource(result.source || null);
+      const db = getFirebaseDb();
+
+      await setDoc(
+        doc(db, SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID),
+        {
+          key: SITE_CONFIG_DOCUMENT_ID,
+          config: draftConfig,
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      setSource("firebase");
       setParseError(null);
       setMessageTone("success");
+      setMessage("Configuration saved successfully (firebase).");
+      await loadConfig();
+    } catch (error) {
+      setMessageTone("error");
       setMessage(
-        `Configuration saved successfully${result.source ? ` (${result.source})` : ""}.`
+        error instanceof Error ? error.message : "Unable to save the configuration."
       );
     } finally {
       setIsSaving(false);
@@ -370,10 +341,6 @@ export function AdminPanel() {
   }
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", {
-      method: "POST"
-    }).catch(() => undefined);
-
     if (usesFirebaseLogin) {
       await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
     }
@@ -400,11 +367,11 @@ export function AdminPanel() {
           <p className="mt-4 text-sm">
             {usesFirebaseLogin
               ? "Sign in with your Firebase email and password account to open the admin editor."
-              : "Enter the admin password to open the structured site configuration editor."}
+              : "Firebase admin login is not configured. Add the Firebase web config and allowed admin email values to enable the editor."}
           </p>
 
-          <form className="mt-8 space-y-5" onSubmit={handleLogin}>
-            {usesFirebaseLogin ? (
+          {usesFirebaseLogin ? (
+            <form className="mt-8 space-y-5" onSubmit={handleLogin}>
               <div>
                 <label
                   htmlFor="admin-email"
@@ -421,40 +388,40 @@ export function AdminPanel() {
                   autoComplete="email"
                 />
               </div>
-            ) : null}
 
-            <div>
-              <label
-                htmlFor="admin-password"
-                className="mb-2 block text-sm font-semibold text-ink-800"
-              >
-                Password
-              </label>
-              <Input
-                id="admin-password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter admin password"
-                autoComplete={usesFirebaseLogin ? "current-password" : "off"}
-              />
-            </div>
+              <div>
+                <label
+                  htmlFor="admin-password"
+                  className="mb-2 block text-sm font-semibold text-ink-800"
+                >
+                  Password
+                </label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter admin password"
+                  autoComplete="current-password"
+                />
+              </div>
 
-            {message ? <div className={getMessageClassName(messageTone)}>{message}</div> : null}
+              {message ? <div className={getMessageClassName(messageTone)}>{message}</div> : null}
 
-            <Button type="submit" className="w-full" disabled={isAuthenticating}>
-              {isAuthenticating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : usesFirebaseLogin ? (
-                "Sign In with Firebase"
-              ) : (
-                "Access Admin"
-              )}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isAuthenticating}>
+                {isAuthenticating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In with Firebase"
+                )}
+              </Button>
+            </form>
+          ) : message ? (
+            <div className={`mt-8 ${getMessageClassName(messageTone)}`}>{message}</div>
+          ) : null}
         </Card>
       </div>
     );

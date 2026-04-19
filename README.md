@@ -36,10 +36,21 @@ lib/
 public/
 ```
 
-## Enquiry Providers
-- `mock` for local UI verification
-- `firebase` for Firestore submissions
-- `mongodb` for API-based MongoDB submissions
+## Enquiry Delivery
+- `NEXT_PUBLIC_ENQUIRY_STORAGE_PROVIDER` controls storage: `mock`, `firebase`, `mongodb`, or `none`
+- `NEXT_PUBLIC_ENQUIRY_EMAIL_PROVIDER` controls email delivery: `smtp` or `none`
+- Use `firebase + smtp` for store and email
+- Use `firebase + none` for storage only
+- Use `none + smtp` for email only
+- Use `mongodb + smtp` for MongoDB storage and email
+- `NEXT_PUBLIC_ENQUIRY_PROVIDER` is still accepted as a legacy fallback for storage only
+
+## Enquiry Email
+- Contact form submissions can also send an SMTP notification email after storing the enquiry.
+- Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, and `ENQUIRY_NOTIFICATION_TO`.
+- In `firebase + smtp` mode, the enquiry is stored in Firestore first and then `/api/enquiry/notify` sends the email.
+- In `mongodb + smtp` mode, `/api/enquiry` stores the enquiry and sends the email in the same request.
+- In `none + smtp` mode, the form sends only the SMTP notification email without storing the enquiry.
 
 ## Media Uploads
 - Image fields in `/admin` can upload directly to Firebase Storage.
@@ -53,7 +64,6 @@ public/
 
 ## Admin Auth
 - Firebase email/password login is used automatically on `/admin` when the Firebase web config is present.
-- Set `ADMIN_JWT_SECRET` to a long random secret because the admin API still uses a server-issued session cookie.
+- The admin API verifies the Firebase ID token directly on each request. No extra admin password hash or JWT secret is required.
 - Set `ADMIN_FIREBASE_EMAILS` to a comma-separated allowlist to restrict which Firebase accounts can access admin.
-- Optional legacy fallback: generate a hash with `npm run admin:hash -- your-password` and set `ADMIN_PASSWORD_HASH`.
 - Visit `/admin` to edit and save the centralized config.

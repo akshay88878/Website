@@ -3,9 +3,11 @@
 ## Environment
 - Copy `.env.example` to `.env.local` for local development.
 - Set `NEXT_PUBLIC_SITE_URL` to the final production domain.
-- Set `NEXT_PUBLIC_ENQUIRY_PROVIDER` to `firebase` or `mongodb`.
+- Set `NEXT_PUBLIC_ENQUIRY_STORAGE_PROVIDER` to `firebase`, `mongodb`, `none`, or `mock`.
+- Set `NEXT_PUBLIC_ENQUIRY_EMAIL_PROVIDER` to `smtp` or `none`.
 - Add the matching Firebase or MongoDB credentials.
-- Add `ADMIN_PASSWORD_HASH` and `ADMIN_JWT_SECRET` for `/admin`.
+- Add the SMTP credentials for enquiry email delivery.
+- Set `ADMIN_FIREBASE_EMAILS` to the Firebase account email(s) that can access `/admin`.
 
 ## Pre-deploy Verification
 - Run `npm install`.
@@ -24,9 +26,11 @@
 5. Trigger the first production deployment.
 
 ## Backend Notes
-- Firebase mode writes directly to the `enquiries` Firestore collection.
-- MongoDB mode sends the form payload to `/api/enquiry`.
-- Production should use only one provider at a time to avoid ambiguous behavior.
+- Firebase storage mode writes directly to the `enquiries` Firestore collection.
+- Firebase storage + SMTP mode then calls `/api/enquiry/notify` to send the SMTP notification email.
+- MongoDB storage mode sends the form payload to `/api/enquiry`.
+- MongoDB storage + SMTP mode stores the enquiry and sends the SMTP notification email in the same request.
+- SMTP-only mode uses `/api/enquiry/notify` without storing the enquiry.
 - Site configuration reads from MongoDB when configured, otherwise from `storage/site-config.json`.
 - Admin config updates write to the same active storage source.
 

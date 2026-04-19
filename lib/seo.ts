@@ -35,7 +35,7 @@ export function createMetadata({
         { url: "/favicon.ico" },
         { url: "/icon.png", type: "image/png" }
       ],
-      apple: [{ url: "/apple-icon.png", type: "image/png" }]
+      apple: [{ url: "/icon.png", type: "image/png" }]
     },
     alternates: {
       canonical: canonicalUrl

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
-import { verifyAdminRequest } from "@/services/adminSession";
+import {
+  isFirebaseAdminAuthConfigured,
+  verifyFirebaseAdminRequest
+} from "@/services/firebaseAdminAuth";
 import {
   getSiteConfigWithSource,
   saveSiteConfig
@@ -9,21 +12,36 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function createUnauthorizedResponse() {
+function createUnauthorizedResponse(message = "Unauthorized") {
   return NextResponse.json(
     {
       success: false,
-      message: "Unauthorized"
+      message
     },
     { status: 401 }
   );
 }
 
-export async function GET(request: Request) {
-  const adminSession = await verifyAdminRequest(request);
+function createAdminConfigurationResponse() {
+  return NextResponse.json(
+    {
+      success: false,
+      message:
+        "Firebase admin authentication is not configured. Set NEXT_PUBLIC_FIREBASE_PROJECT_ID."
+    },
+    { status: 503 }
+  );
+}
 
-  if (!adminSession) {
-    return createUnauthorizedResponse();
+export async function GET(request: Request) {
+  if (!isFirebaseAdminAuthConfigured()) {
+    return createAdminConfigurationResponse();
+  }
+
+  const verifiedAdmin = await verifyFirebaseAdminRequest(request);
+
+  if (!verifiedAdmin.success) {
+    return createUnauthorizedResponse(verifiedAdmin.message);
   }
 
   const { config, source } = await getSiteConfigWithSource();
@@ -36,10 +54,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const adminSession = await verifyAdminRequest(request);
+  if (!isFirebaseAdminAuthConfigured()) {
+    return createAdminConfigurationResponse();
+  }
 
-  if (!adminSession) {
-    return createUnauthorizedResponse();
+  const verifiedAdmin = await verifyFirebaseAdminRequest(request);
+
+  if (!verifiedAdmin.success) {
+    return createUnauthorizedResponse(verifiedAdmin.message);
   }
 
   const payload = await request.json().catch(() => null);

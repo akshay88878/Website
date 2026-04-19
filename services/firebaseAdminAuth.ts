@@ -34,7 +34,19 @@ function getAllowedAdminEmails() {
 }
 
 export function isFirebaseAdminAuthConfigured() {
-  return Boolean(getFirebaseProjectId()) && Boolean(process.env.ADMIN_JWT_SECRET);
+  return Boolean(getFirebaseProjectId());
+}
+
+function getFirebaseAdminIdTokenFromRequest(request: Request) {
+  const authorizationHeader = request.headers.get("authorization");
+
+  if (!authorizationHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const idToken = authorizationHeader.slice("Bearer ".length).trim();
+
+  return idToken || null;
 }
 
 export async function verifyFirebaseAdminIdToken(
@@ -112,4 +124,19 @@ export async function verifyFirebaseAdminIdToken(
       message: "Unable to verify the Firebase sign-in token."
     };
   }
+}
+
+export async function verifyFirebaseAdminRequest(
+  request: Request
+): Promise<FirebaseVerificationResult> {
+  const idToken = getFirebaseAdminIdTokenFromRequest(request);
+
+  if (!idToken) {
+    return {
+      success: false,
+      message: "Missing Firebase admin authorization token."
+    };
+  }
+
+  return verifyFirebaseAdminIdToken(idToken);
 }
