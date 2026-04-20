@@ -59,8 +59,9 @@ public/
 
 ## Site Config Storage
 - When Firebase config is present, the centralized site config is read from Firestore document `site_configs/default-site-config`.
-- In Firebase mode, `/admin` saves the site config directly to Firestore instead of the local `storage/site-config.json` file.
-- Firestore rules must allow public reads for the site config document and authenticated admin writes for `/admin`.
+- In Firebase mode, `/api/admin/config` saves the site config on the server through Firebase Admin instead of the local `storage/site-config.json` file.
+- Set `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, and `FIREBASE_ADMIN_PRIVATE_KEY` so admin saves use the server-side Firebase Admin SDK.
+- Firestore rules no longer need to allow browser writes for `/admin` when server-side Firebase Admin saves are configured.
 
 Example Firestore rules:
 ```text
@@ -69,15 +70,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /site_configs/default-site-config {
       allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email in ['admin@example.com'];
     }
   }
 }
 ```
-
-Replace `admin@example.com` with the same Firebase email account you use for `/admin`.
 
 ## Admin Auth
 - Firebase email/password login is used automatically on `/admin` when the Firebase web config is present.

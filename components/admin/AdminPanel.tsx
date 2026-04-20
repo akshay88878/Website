@@ -7,7 +7,6 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut
 } from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { Loader2, LogOut, Save } from "lucide-react";
 
 import {
@@ -20,9 +19,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { getErrorDetails } from "@/lib/errorDetails";
-import { getFirebaseAuth, getFirebaseDb, hasFirebaseConfig } from "@/lib/firebase";
+import { getFirebaseAuth, hasFirebaseConfig } from "@/lib/firebase";
 import { parseSiteConfig } from "@/lib/normalizeSiteData";
-import { SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID } from "@/services/siteConfigDocument";
 import type { SiteConfig } from "@/types/siteConfig";
 
 type AdminStatus = "loading" | "unauthorized" | "ready";
@@ -39,11 +37,6 @@ type LoginResponse = {
   success: boolean;
   message?: string;
 };
-
-function requiresFirebaseClientSave(message?: string) {
-  return message ===
-    "Firebase-backed site config must be saved through the authenticated Firebase admin client.";
-}
 
 function getSaveErrorMessage(error: unknown) {
   const firebaseMessage =
@@ -390,45 +383,12 @@ export function AdminPanel() {
         return;
       }
 
-      if (!requiresFirebaseClientSave(result?.message)) {
-        console.error("[admin/save] API save failed.", {
-          status: response.status,
-          body: result
-        });
-        setMessageTone("error");
-        setMessage(result?.message || "Unable to save the configuration.");
-        return;
-      }
-
-      console.error("[admin/save] API save requested Firebase client fallback.", {
+      console.error("[admin/save] API save failed.", {
         status: response.status,
         body: result
       });
-
-      const firebaseAuth = getFirebaseAuth();
-
-      if (!firebaseAuth.currentUser) {
-        resetAdminAccess("Your Firebase admin session has expired. Sign in again.", "error");
-        return;
-      }
-
-      const db = getFirebaseDb();
-
-      await setDoc(
-        doc(db, SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID),
-        {
-          key: SITE_CONFIG_DOCUMENT_ID,
-          config: draftConfig,
-          updatedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
-
-      setSource("firebase");
-      setParseError(null);
-      setMessageTone("success");
-      setMessage("Configuration saved successfully (firebase).");
-      await loadConfig();
+      setMessageTone("error");
+      setMessage(result?.message || "Unable to save the configuration.");
     } catch (error) {
       logAdminSaveError("Save flow failed.", error, {
         source: source ?? "unknown",

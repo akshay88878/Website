@@ -4,6 +4,11 @@ import path from "path";
 import { unstable_noStore as noStore } from "next/cache";
 import { doc, getDoc } from "firebase/firestore/lite";
 
+import {
+  getFirebaseAdminConfigErrorMessage,
+  getFirebaseAdminDb,
+  hasFirebaseAdminConfig
+} from "@/lib/firebaseAdmin";
 import { getFirebaseServerDb, hasFirebaseConfig } from "@/lib/firebase";
 import { getMongoDb } from "@/lib/mongodb";
 import { normalizeSiteData } from "@/lib/normalizeSiteData";
@@ -33,6 +38,19 @@ async function readSiteConfigFromFile() {
 }
 
 async function readSiteConfigFromFirebase() {
+  if (hasFirebaseAdminConfig()) {
+    const snapshot = await getFirebaseAdminDb()
+      .collection(SITE_CONFIG_COLLECTION)
+      .doc(SITE_CONFIG_DOCUMENT_ID)
+      .get();
+    const data = snapshot.data();
+
+    return {
+      exists: snapshot.exists,
+      config: data?.config ?? null
+    };
+  }
+
   const db = getFirebaseServerDb();
   const snapshot = await getDoc(doc(db, SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID));
   const data = snapshot.data();
@@ -115,13 +133,30 @@ export async function saveSiteConfig(input: unknown): Promise<{
   config: SiteConfig;
   source: SiteConfigSource;
 }> {
-  if (hasFirebaseSiteConfigStore()) {
-    throw new Error(
-      "Firebase-backed site config must be saved through the authenticated Firebase admin client."
-    );
-  }
-
   const config = normalizeSiteData(input);
+
+  if (hasFirebaseSiteConfigStore()) {
+    if (!hasFirebaseAdminConfig()) {
+      throw new Error(getFirebaseAdminConfigErrorMessage());
+    }
+
+    await getFirebaseAdminDb()
+      .collection(SITE_CONFIG_COLLECTION)
+      .doc(SITE_CONFIG_DOCUMENT_ID)
+      .set(
+        {
+          key: SITE_CONFIG_DOCUMENT_ID,
+          config,
+          updatedAt: new Date().toISOString()
+        },
+        { merge: true }
+      );
+
+    return {
+      config,
+      source: "firebase"
+    };
+  }
 
   if (hasMongoSiteConfigStore()) {
     try {
