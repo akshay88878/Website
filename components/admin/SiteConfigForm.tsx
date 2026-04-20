@@ -596,10 +596,10 @@ export function SiteConfigForm({
           {activeSection === "home" ? (
             <EditorCard
               title="Brand & Navigation"
-              description="Manage the site identity copy and the header navigation links."
+              description="Manage the header brand name, site identity copy, and header navigation links."
             >
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Site name">
+              <Field label="Header/site name">
                 <Input
                   value={config.content.siteName}
                   onChange={(event) => updateField(["content", "siteName"], event.target.value)}

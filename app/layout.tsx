@@ -4,7 +4,7 @@ import { Manrope, Space_Grotesk } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeRuntime } from "@/components/layout/ThemeRuntime";
-import { createMetadata, siteConfig } from "@/lib/seo";
+import { createMetadata } from "@/lib/seo";
 import { getSiteConfig } from "@/services/siteConfigStore";
 
 import "./globals.css";
@@ -21,11 +21,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap"
 });
 
-export const metadata: Metadata = createMetadata({
-  title: siteConfig.name,
-  description: siteConfig.description,
-  path: "/"
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+
+  return createMetadata({
+    title: config.content.siteName,
+    description: config.content.siteDescription,
+    path: "/",
+    siteName: config.content.siteName
+  });
+}
 
 export default async function RootLayout({
   children
@@ -40,7 +45,7 @@ export default async function RootLayout({
         <ThemeRuntime theme={config.theme} />
         <Navbar
           navigation={config.content.navigation.items}
-          brandName={config.footer.brandName}
+          brandName={config.content.siteName}
         />
         <div className="flex-1">{children}</div>
         <Footer footer={config.footer} />

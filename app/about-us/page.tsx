@@ -11,7 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return createMetadata({
     title: config.content.aboutPage.metaTitle,
     description: config.content.aboutPage.metaDescription,
-    path: "/about-us"
+    path: "/about-us",
+    siteName: config.content.siteName
   });
 }
 

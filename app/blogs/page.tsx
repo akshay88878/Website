@@ -10,7 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return createMetadata({
     title: config.content.blogPage.metaTitle,
     description: config.content.blogPage.metaDescription,
-    path: "/blogs"
+    path: "/blogs",
+    siteName: config.content.siteName
   });
 }
 

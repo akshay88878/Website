@@ -13,18 +13,20 @@ type MetadataOptions = {
   title: string;
   description?: string;
   path?: string;
+  siteName?: string;
 };
 
 export function createMetadata({
   title,
   description = siteConfig.description,
-  path = "/"
+  path = "/",
+  siteName = siteConfig.name
 }: MetadataOptions): Metadata {
   const metadataBase = new URL(siteConfig.url);
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const canonicalUrl = new URL(normalizedPath, metadataBase).toString();
   const imageUrl = new URL("/opengraph-image", metadataBase).toString();
-  const finalTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
+  const finalTitle = title === siteName ? title : `${title} | ${siteName}`;
 
   return {
     metadataBase,
@@ -44,7 +46,7 @@ export function createMetadata({
       title: finalTitle,
       description,
       url: canonicalUrl,
-      siteName: siteConfig.name,
+      siteName,
       locale: "en_IN",
       type: "website",
       images: [
@@ -52,7 +54,7 @@ export function createMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `${siteConfig.name} preview`
+          alt: `${siteName} preview`
         }
       ]
     },

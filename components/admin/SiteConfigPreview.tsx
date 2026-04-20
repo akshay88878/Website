@@ -49,7 +49,7 @@ function PreviewShell({
         <div className="pointer-events-none">
           <Navbar
             navigation={config.content.navigation.items}
-            brandName={config.footer.brandName}
+            brandName={config.content.siteName}
             activePath={activeRoute}
           />
           <div className="flex-1">{children}</div>

@@ -15,8 +15,10 @@ export function SiteLogo({
   imageClassName,
   textClassName,
   priority = false,
-  brandName = "LOMAS AI"
+  brandName = "Site"
 }: SiteLogoProps) {
+  const resolvedBrandName = brandName.trim() || "Site";
+
   return (
     <span className={cn("flex items-center gap-3", className)}>
       <span
@@ -27,7 +29,7 @@ export function SiteLogo({
       >
         <Image
           src="/logo.jpeg"
-          alt="LOMAS AI logo"
+          alt={`${resolvedBrandName} logo`}
           width={56}
           height={56}
           priority={priority}
@@ -40,7 +42,7 @@ export function SiteLogo({
           textClassName
         )}
       >
-        {brandName}
+        {resolvedBrandName}
       </span>
     </span>
   );
