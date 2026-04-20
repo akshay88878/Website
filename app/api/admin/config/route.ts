@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
+import { getErrorDetails } from "@/lib/errorDetails";
 import {
   isFirebaseAdminAuthConfigured,
   verifyFirebaseAdminRequest
@@ -90,6 +91,10 @@ export async function POST(request: Request) {
       data: config
     });
   } catch (error) {
+    console.error("[api/admin/config] Save failed.", {
+      error: getErrorDetails(error)
+    });
+
     return NextResponse.json(
       {
         success: false,

@@ -19,6 +19,7 @@ import { SiteConfigPreview } from "@/components/admin/SiteConfigPreview";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { getErrorDetails } from "@/lib/errorDetails";
 import { getFirebaseAuth, getFirebaseDb, hasFirebaseConfig } from "@/lib/firebase";
 import { parseSiteConfig } from "@/lib/normalizeSiteData";
 import { SITE_CONFIG_COLLECTION, SITE_CONFIG_DOCUMENT_ID } from "@/services/siteConfigDocument";
@@ -39,10 +40,43 @@ type LoginResponse = {
   message?: string;
 };
 
+function requiresFirebaseClientSave(message?: string) {
+  return message ===
+    "Firebase-backed site config must be saved through the authenticated Firebase admin client.";
+}
+
+function getSaveErrorMessage(error: unknown) {
+  const firebaseMessage =
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+      ? error.message
+      : null;
+
+  if (firebaseMessage?.toLowerCase().includes("missing or insufficient permissions")) {
+    return (
+      "Firestore denied the save request. Your admin account is signed in, but the Firestore " +
+      "security rules are blocking writes to site_configs/default-site-config."
+    );
+  }
+
+  return error instanceof Error ? error.message : "Unable to save the configuration.";
+}
+
 function getMessageClassName(tone: MessageTone) {
   return tone === "error"
     ? "rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
     : "rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700";
+}
+
+function logAdminSaveError(stage: string, error: unknown, extra?: Record<string, unknown>) {
+  if (extra) {
+    console.error(`[admin/save] ${stage}`, extra, getErrorDetails(error), error);
+    return;
+  }
+
+  console.error(`[admin/save] ${stage}`, getErrorDetails(error), error);
 }
 
 export function AdminPanel() {
@@ -306,6 +340,71 @@ export function AdminPanel() {
         return;
       }
 
+      const idToken = await getAdminIdToken();
+
+      if (!idToken) {
+        resetAdminAccess("Your Firebase admin session has expired. Sign in again.", "error");
+        return;
+      }
+
+      const response = await fetch("/api/admin/config", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(draftConfig)
+      });
+
+      const result = (await response.json().catch(() => null)) as ConfigResponse | null;
+
+      if (response.status === 401) {
+        console.error("[admin/save] API save returned unauthorized response.", {
+          status: response.status,
+          body: result
+        });
+        await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
+        resetAdminAccess(
+          result?.message || "Your Firebase admin session has expired. Sign in again.",
+          "error"
+        );
+        return;
+      }
+
+      if (response.ok && result?.success && result.data) {
+        const parsed = parseSiteConfig(result.data);
+
+        if (!parsed.success) {
+          setMessageTone("error");
+          setMessage(parsed.message);
+          return;
+        }
+
+        setDraftConfig(parsed.data);
+        setPreviewConfig(parsed.data);
+        setEditorValue(JSON.stringify(parsed.data, null, 2));
+        setSource(result.source || null);
+        setParseError(null);
+        setMessageTone("success");
+        setMessage(`Configuration saved successfully (${result.source || "saved"}).`);
+        return;
+      }
+
+      if (!requiresFirebaseClientSave(result?.message)) {
+        console.error("[admin/save] API save failed.", {
+          status: response.status,
+          body: result
+        });
+        setMessageTone("error");
+        setMessage(result?.message || "Unable to save the configuration.");
+        return;
+      }
+
+      console.error("[admin/save] API save requested Firebase client fallback.", {
+        status: response.status,
+        body: result
+      });
+
       const firebaseAuth = getFirebaseAuth();
 
       if (!firebaseAuth.currentUser) {
@@ -331,10 +430,12 @@ export function AdminPanel() {
       setMessage("Configuration saved successfully (firebase).");
       await loadConfig();
     } catch (error) {
+      logAdminSaveError("Save flow failed.", error, {
+        source: source ?? "unknown",
+        hasDraftConfig: Boolean(draftConfig)
+      });
       setMessageTone("error");
-      setMessage(
-        error instanceof Error ? error.message : "Unable to save the configuration."
-      );
+      setMessage(getSaveErrorMessage(error));
     } finally {
       setIsSaving(false);
     }
