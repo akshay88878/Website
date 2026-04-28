@@ -16,6 +16,10 @@ export interface ThemeConfig {
   backgroundPalette: string;
   sectionStyle: string;
   cardStyle: string;
+  primaryColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  accentColor?: string;
 }
 
 export interface FooterConfig {
@@ -74,6 +78,8 @@ export interface ProductsPageContent {
   eyebrow: string;
   title: string;
   description: string;
+  alignment?: Alignment;
+  width?: ContainerWidth;
   cardLabels: {
     eyebrow: string;
     techStackHeading: string;
@@ -91,6 +97,8 @@ export interface BlogPageContent {
   paragraphs: string[];
   imageSrc: string;
   imageAlt: string;
+  alignment?: Alignment;
+  width?: ContainerWidth;
 }
 
 export interface TeamMember {
@@ -106,16 +114,24 @@ export interface AboutPageContent {
     eyebrow: string;
     title: string;
     description: string;
+    alignment?: Alignment;
+    width?: ContainerWidth;
   };
   ceoMessage: {
     eyebrow: string;
     quote: string;
     signature: string;
+    alignment?: Alignment;
+    width?: ContainerWidth;
   };
   team: {
     eyebrow: string;
     title: string;
     members: TeamMember[];
+    alignment?: Alignment;
+    headingAlignment?: Alignment;
+    contentAlignment?: Alignment;
+    width?: ContainerWidth;
   };
 }
 
@@ -125,6 +141,8 @@ export interface ContactPageContent {
   eyebrow: string;
   title: string;
   description: string;
+  alignment?: Alignment;
+  width?: ContainerWidth;
   info: {
     registeredAddressHeading: string;
     address: string[];

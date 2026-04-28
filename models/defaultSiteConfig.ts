@@ -64,6 +64,8 @@ export const defaultSiteConfig: SiteConfig = {
       title: "Intelligent products for modern education delivery",
       description:
         "Our platform and hardware experiences are designed to support scalable AI adoption across institutions, classrooms, and student engagement programs.",
+      alignment: "center",
+      width: "default",
       cardLabels: {
         eyebrow: "Product",
         techStackHeading: "Tech Stack",
@@ -117,7 +119,9 @@ export const defaultSiteConfig: SiteConfig = {
         "LOMAS AI is built around that model. We see AI as an operating layer for better teaching, stronger learner engagement, and more consistent educational delivery."
       ],
       imageSrc: "/images/blog-illustration.svg",
-      imageAlt: "Illustration representing the evolution of artificial intelligence"
+      imageAlt: "Illustration representing the evolution of artificial intelligence",
+      alignment: "left",
+      width: "default"
     },
     aboutPage: {
       metaTitle: "About Us",
@@ -127,13 +131,17 @@ export const defaultSiteConfig: SiteConfig = {
         eyebrow: "Vision",
         title: "Building trusted AI infrastructure for every learning journey",
         description:
-          "We believe the future of education will be shaped by systems that increase teacher capacity, deepen student engagement, and make institutional operations more intelligent. Our work focuses on practical AI that respects classroom realities while elevating educational quality at scale."
+          "We believe the future of education will be shaped by systems that increase teacher capacity, deepen student engagement, and make institutional operations more intelligent. Our work focuses on practical AI that respects classroom realities while elevating educational quality at scale.",
+        alignment: "center",
+        width: "default"
       },
       ceoMessage: {
         eyebrow: "CEO Message",
         quote:
           '"LOMAS AI exists to make advanced learning technology accessible, credible, and deeply useful for institutions across India. We are not building novelty. We are building dependable systems that help educators lead with more clarity and impact."',
-        signature: "Aarav Mehta, Founder & CEO"
+        signature: "Aarav Mehta, Founder & CEO",
+        alignment: "center",
+        width: "narrow"
       },
       team: {
         eyebrow: "Our Team",
@@ -159,7 +167,11 @@ export const defaultSiteConfig: SiteConfig = {
             role: "Director, School Partnerships",
             image: "/images/team/mira.svg"
           }
-        ]
+        ],
+        alignment: "center",
+        headingAlignment: "center",
+        contentAlignment: "center",
+        width: "wide"
       }
     },
     contactPage: {
@@ -170,6 +182,8 @@ export const defaultSiteConfig: SiteConfig = {
       title: "Start a conversation with the LOMAS AI team",
       description:
         "Share your institution profile, partnership objective, or product interest. We will respond with the right team and next steps.",
+      alignment: "center",
+      width: "default",
       info: {
         registeredAddressHeading: "Registered Address",
         address: [
@@ -212,7 +226,11 @@ export const defaultSiteConfig: SiteConfig = {
     mode: "light",
     backgroundPalette: "aurora",
     sectionStyle: "glass",
-    cardStyle: "elevated"
+    cardStyle: "elevated",
+    primaryColor: "#4F46E5",
+    backgroundColor: "#FFFFFF",
+    textColor: "#1F2937",
+    accentColor: "#7C3AED"
   },
   footer: {
     text: "AI-powered education infrastructure for schools, educators, and learners across India.",

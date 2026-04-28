@@ -3,7 +3,8 @@ export type AdminEditorSectionId =
   | "products"
   | "blogs"
   | "about"
-  | "contact";
+  | "contact"
+  | "theme";
 
 export const adminEditorSections: {
   id: AdminEditorSectionId;
@@ -17,7 +18,7 @@ export const adminEditorSections: {
     label: "Home",
     path: "/",
     eyebrow: "Landing",
-    description: "Branding, navigation, homepage content, footer, and theme."
+    description: "Branding, navigation, homepage content, and footer."
   },
   {
     id: "products",
@@ -46,5 +47,12 @@ export const adminEditorSections: {
     path: "/contact-us",
     eyebrow: "Reach Us",
     description: "Contact details, social links, and enquiry form labels."
+  },
+  {
+    id: "theme",
+    label: "Theme",
+    path: "/theme",
+    eyebrow: "Styling",
+    description: "Customize site colors, card styles, and theme mode."
   }
 ];

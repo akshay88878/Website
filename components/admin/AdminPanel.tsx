@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { startTransition, useCallback, useEffect, useState, type FormEvent } from "react";
 import {
   inMemoryPersistence,
   setPersistence,
@@ -92,7 +92,7 @@ export function AdminPanel() {
   const activeEditorSection =
     adminEditorSections.find((section) => section.id === activeSection) ?? adminEditorSections[0];
 
-  function resetAdminAccess(nextMessage?: string, tone: MessageTone = "success") {
+  const resetAdminAccess = useCallback((nextMessage?: string, tone: MessageTone = "success") => {
     setActiveSection("home");
     setStatus("unauthorized");
     setEmail("");
@@ -104,9 +104,9 @@ export function AdminPanel() {
     setSource(null);
     setMessageTone(tone);
     setMessage(nextMessage ?? null);
-  }
+  }, []);
 
-  async function getAdminIdToken() {
+  const getAdminIdToken = useCallback(async () => {
     if (!usesFirebaseLogin) {
       return null;
     }
@@ -118,9 +118,9 @@ export function AdminPanel() {
     }
 
     return currentUser.getIdToken();
-  }
+  }, [usesFirebaseLogin]);
 
-  async function loadConfig() {
+  const loadConfig = useCallback(async () => {
     const idToken = await getAdminIdToken();
 
     if (!idToken) {
@@ -176,7 +176,7 @@ export function AdminPanel() {
         "error"
       );
     }
-  }
+  }, [getAdminIdToken, resetAdminAccess]);
 
   useEffect(() => {
     let isMounted = true;
@@ -218,9 +218,9 @@ export function AdminPanel() {
     return () => {
       isMounted = false;
     };
-  }, [usesFirebaseLogin]);
+  }, [resetAdminAccess, usesFirebaseLogin]);
 
-  function handleFormChange(nextConfig: SiteConfig) {
+  const handleFormChange = useCallback((nextConfig: SiteConfig) => {
     setMessage(null);
     setDraftConfig(nextConfig);
 
@@ -238,32 +238,39 @@ export function AdminPanel() {
       setEditorValue(JSON.stringify(parsed.data, null, 2));
       setParseError(null);
     });
-  }
+  }, []);
 
-  function handleEditorChange(value: string) {
+  const handleEditorChange = useCallback((value: string) => {
     setEditorValue(value);
     setMessage(null);
+  }, []);
 
-    startTransition(() => {
-      try {
-        const parsedJson = JSON.parse(value);
-        const parsed = parseSiteConfig(parsedJson);
+  // Debounce JSON parsing by 500ms to prevent excessive re-renders during typing
+  useEffect(() => {
+    const parseTimer = setTimeout(() => {
+      startTransition(() => {
+        try {
+          const parsedJson = JSON.parse(editorValue);
+          const parsed = parseSiteConfig(parsedJson);
 
-        if (!parsed.success) {
-          setParseError(parsed.message);
-          return;
+          if (!parsed.success) {
+            setParseError(parsed.message);
+            return;
+          }
+
+          setDraftConfig(parsed.data);
+          setPreviewConfig(parsed.data);
+          setParseError(null);
+        } catch {
+          setParseError("Invalid JSON syntax. Fix the JSON before saving.");
         }
+      });
+    }, 500);
 
-        setDraftConfig(parsed.data);
-        setPreviewConfig(parsed.data);
-        setParseError(null);
-      } catch {
-        setParseError("Invalid JSON syntax. Fix the JSON before saving.");
-      }
-    });
-  }
+    return () => clearTimeout(parseTimer);
+  }, [editorValue]);
 
-  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+  const handleLogin = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsAuthenticating(true);
     setMessage(null);
@@ -276,11 +283,19 @@ export function AdminPanel() {
     }
 
     const firebaseAuth = getFirebaseAuth();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !password) {
+      setMessageTone("error");
+      setMessage("Enter your Firebase admin email and password.");
+      setIsAuthenticating(false);
+      return;
+    }
 
     try {
       await setPersistence(firebaseAuth, inMemoryPersistence);
 
-      const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const credential = await signInWithEmailAndPassword(firebaseAuth, trimmedEmail, password);
       const idToken = await credential.user.getIdToken();
 
       const response = await fetch("/api/admin/login", {
@@ -316,9 +331,9 @@ export function AdminPanel() {
     } finally {
       setIsAuthenticating(false);
     }
-  }
+  }, [email, loadConfig, password, usesFirebaseLogin]);
 
-  async function handleSave() {
+  const handleSave = useCallback(async () => {
     if (!draftConfig || parseError) {
       return;
     }
@@ -399,15 +414,15 @@ export function AdminPanel() {
     } finally {
       setIsSaving(false);
     }
-  }
+  }, [draftConfig, getAdminIdToken, parseError, resetAdminAccess, source, usesFirebaseLogin]);
 
-  async function handleLogout() {
+  const handleLogout = useCallback(async () => {
     if (usesFirebaseLogin) {
       await firebaseSignOut(getFirebaseAuth()).catch(() => undefined);
     }
 
     resetAdminAccess("Signed out.");
-  }
+  }, [resetAdminAccess, usesFirebaseLogin]);
 
   if (status === "loading") {
     return (
@@ -447,6 +462,7 @@ export function AdminPanel() {
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="admin@lomasai.com"
                   autoComplete="email"
+                  required
                 />
               </div>
 
@@ -464,6 +480,7 @@ export function AdminPanel() {
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Enter admin password"
                   autoComplete="current-password"
+                  required
                 />
               </div>
 

@@ -54,6 +54,8 @@ const siteConfigSchema = z.object({
       eyebrow: z.string().min(1),
       title: z.string().min(1),
       description: z.string().min(1),
+      alignment: alignmentSchema.optional(),
+      width: containerWidthSchema.optional(),
       cardLabels: z.object({
         eyebrow: z.string().min(1),
         techStackHeading: z.string().min(1),
@@ -77,7 +79,9 @@ const siteConfigSchema = z.object({
       title: z.string().min(1),
       paragraphs: z.array(z.string().min(1)),
       imageSrc: z.string().min(1),
-      imageAlt: z.string().min(1)
+      imageAlt: z.string().min(1),
+      alignment: alignmentSchema.optional(),
+      width: containerWidthSchema.optional()
     }),
     aboutPage: z.object({
       metaTitle: z.string().min(1),
@@ -85,12 +89,16 @@ const siteConfigSchema = z.object({
       vision: z.object({
         eyebrow: z.string().min(1),
         title: z.string().min(1),
-        description: z.string().min(1)
+        description: z.string().min(1),
+        alignment: alignmentSchema.optional(),
+        width: containerWidthSchema.optional()
       }),
       ceoMessage: z.object({
         eyebrow: z.string().min(1),
         quote: z.string().min(1),
-        signature: z.string().min(1)
+        signature: z.string().min(1),
+        alignment: alignmentSchema.optional(),
+        width: containerWidthSchema.optional()
       }),
       team: z.object({
         eyebrow: z.string().min(1),
@@ -101,7 +109,11 @@ const siteConfigSchema = z.object({
             role: z.string().min(1),
             image: z.string().min(1)
           })
-        )
+        ),
+        alignment: alignmentSchema.optional(),
+        headingAlignment: alignmentSchema.optional(),
+        contentAlignment: alignmentSchema.optional(),
+        width: containerWidthSchema.optional()
       })
     }),
     contactPage: z.object({
@@ -110,6 +122,8 @@ const siteConfigSchema = z.object({
       eyebrow: z.string().min(1),
       title: z.string().min(1),
       description: z.string().min(1),
+      alignment: alignmentSchema.optional(),
+      width: containerWidthSchema.optional(),
       info: z.object({
         registeredAddressHeading: z.string().min(1),
         address: z.array(z.string().min(1)),
@@ -141,7 +155,11 @@ const siteConfigSchema = z.object({
     mode: z.enum(["light", "dark"]),
     backgroundPalette: z.string().min(1),
     sectionStyle: z.string().min(1),
-    cardStyle: z.string().min(1)
+    cardStyle: z.string().min(1),
+    primaryColor: z.string().min(4).optional(),
+    backgroundColor: z.string().min(4).optional(),
+    textColor: z.string().min(4).optional(),
+    accentColor: z.string().min(4).optional()
   }),
   footer: z.object({
     text: z.string().min(1),

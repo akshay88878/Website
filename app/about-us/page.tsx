@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { Card } from "@/components/ui/Card";
+import {
+  getBlockAlignClass,
+  getContainerWidth,
+  getFlexAlignClass,
+  getJustifyClass,
+  getTextAlignClass
+} from "@/lib/layoutUtils";
 import { createMetadata } from "@/lib/seo";
 import { getSiteConfig } from "@/services/siteConfigStore";
 
@@ -19,6 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const config = await getSiteConfig();
   const pageContent = config.content.aboutPage;
+  const teamHeadingAlignment =
+    pageContent.team.headingAlignment ?? pageContent.team.alignment ?? "center";
+  const teamContentAlignment =
+    pageContent.team.contentAlignment ?? pageContent.team.alignment ?? "center";
 
   return (
     <main className="page-shell py-16 md:py-20">
@@ -47,23 +58,34 @@ export default async function AboutPage() {
           </Card>
         </div>
 
-        <div>
+        <div
+          className={`${getContainerWidth(pageContent.team.width ?? "wide")} ${getBlockAlignClass(
+            teamHeadingAlignment
+          )} ${getTextAlignClass(teamHeadingAlignment)}`}
+        >
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.team.eyebrow}
           </p>
           <h2 className="section-title mt-4">{pageContent.team.title}</h2>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`mt-10 flex flex-wrap gap-6 ${getJustifyClass(teamContentAlignment)}`}>
             {pageContent.team.members.map((member) => (
-              <Card key={member.name} className="p-6 text-center">
-                <div className="mx-auto h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    width={112}
-                    height={112}
-                    className="h-full w-full object-cover"
-                  />
+              <Card
+                key={member.name}
+                className={`w-full p-6 sm:w-[calc((100%_-_1.5rem)/2)] xl:w-[calc((100%_-_4.5rem)/4)] ${getTextAlignClass(
+                  teamContentAlignment
+                )}`}
+              >
+                <div className={`flex ${getFlexAlignClass(teamContentAlignment)}`}>
+                  <div className="h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      width={112}
+                      height={112}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 </div>
                 <h3 className="mt-5 text-xl font-bold">{member.name}</h3>
                 <p className="mt-2 text-sm text-ink-500">{member.role}</p>

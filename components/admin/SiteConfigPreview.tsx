@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import type { CSSProperties, ReactNode } from "react";
+import { useMemo, memo, Suspense, lazy, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 
 import {
@@ -17,6 +17,13 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import {
+  getBlockAlignClass,
+  getContainerWidth,
+  getFlexAlignClass,
+  getJustifyClass,
+  getTextAlignClass
+} from "@/lib/layoutUtils";
 import { getConfiguredSections } from "@/lib/sectionRegistry";
 import { buildThemeStyleVariables } from "@/lib/theme";
 import type { SiteConfig } from "@/types/siteConfig";
@@ -26,7 +33,10 @@ type SiteConfigPreviewProps = {
   activeSection: AdminEditorSectionId;
 };
 
-function PreviewShell({
+const MemoizedNavbar = memo(Navbar);
+const MemoizedFooter = memo(Footer);
+
+const PreviewShell = memo(function PreviewShell({
   config,
   activeSection,
   children
@@ -35,9 +45,17 @@ function PreviewShell({
   activeSection: AdminEditorSectionId;
   children: ReactNode;
 }) {
-  const style = buildThemeStyleVariables(config.theme) as CSSProperties;
-  const activeRoute =
-    adminEditorSections.find((section) => section.id === activeSection)?.path ?? "/";
+  // Cache theme style object - only recalculate when theme changes
+  const style = useMemo(
+    () => buildThemeStyleVariables(config.theme) as CSSProperties,
+    [config.theme]
+  );
+
+  // Cache active route - only recalculate when activeSection changes
+  const activeRoute = useMemo(
+    () => adminEditorSections.find((section) => section.id === activeSection)?.path ?? "/",
+    [activeSection]
+  );
 
   return (
     <div className="overflow-hidden rounded-[1.75rem] border border-surface-border bg-white">
@@ -47,20 +65,20 @@ function PreviewShell({
         className="bg-[var(--theme-body-bg)]"
       >
         <div className="pointer-events-none">
-          <Navbar
+          <MemoizedNavbar
             navigation={config.content.navigation.items}
             brandName={config.content.siteName}
             activePath={activeRoute}
           />
           <div className="flex-1">{children}</div>
-          <Footer footer={config.footer} />
+          <MemoizedFooter footer={config.footer} />
         </div>
       </div>
     </div>
   );
-}
+});
 
-function ContactFormPreview({ config }: { config: SiteConfig }) {
+const ContactFormPreview = memo(function ContactFormPreview({ config }: { config: SiteConfig }) {
   const formConfig = config.content.contactPage.form;
 
   return (
@@ -129,19 +147,19 @@ function ContactFormPreview({ config }: { config: SiteConfig }) {
       </Button>
     </form>
   );
-}
+});
 
-function HomePreview({ config }: { config: SiteConfig }) {
+const HomePreview = memo(function HomePreview({ config }: { config: SiteConfig }) {
   const sections = getConfiguredSections(config.sections);
 
   return (
     <main className="page-shell">
-      <SectionRenderer sections={sections} content={config.content} />
+      <MemoizedSectionRenderer sections={sections} content={config.content} />
     </main>
   );
-}
+});
 
-function ProductsPreview({ config }: { config: SiteConfig }) {
+const ProductsPreview = memo(function ProductsPreview({ config }: { config: SiteConfig }) {
   const pageContent = config.content.productsPage;
 
   return (
@@ -157,7 +175,7 @@ function ProductsPreview({ config }: { config: SiteConfig }) {
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {pageContent.products.map((product) => (
-            <ProductCard
+            <MemoizedProductCard
               key={product.title}
               product={product}
               labels={pageContent.cardLabels}
@@ -167,9 +185,9 @@ function ProductsPreview({ config }: { config: SiteConfig }) {
       </section>
     </main>
   );
-}
+});
 
-function BlogsPreview({ config }: { config: SiteConfig }) {
+const BlogsPreview = memo(function BlogsPreview({ config }: { config: SiteConfig }) {
   const pageContent = config.content.blogPage;
 
   return (
@@ -201,10 +219,14 @@ function BlogsPreview({ config }: { config: SiteConfig }) {
       </section>
     </main>
   );
-}
+});
 
-function AboutPreview({ config }: { config: SiteConfig }) {
+const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig }) {
   const pageContent = config.content.aboutPage;
+  const teamHeadingAlignment =
+    pageContent.team.headingAlignment ?? pageContent.team.alignment ?? "center";
+  const teamContentAlignment =
+    pageContent.team.contentAlignment ?? pageContent.team.alignment ?? "center";
 
   return (
     <main className="page-shell py-16 md:py-20">
@@ -231,21 +253,32 @@ function AboutPreview({ config }: { config: SiteConfig }) {
           </Card>
         </div>
 
-        <div>
+        <div
+          className={`${getContainerWidth(pageContent.team.width ?? "wide")} ${getBlockAlignClass(
+            teamHeadingAlignment
+          )} ${getTextAlignClass(teamHeadingAlignment)}`}
+        >
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.team.eyebrow}
           </p>
           <h2 className="section-title mt-4">{pageContent.team.title}</h2>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`mt-10 flex flex-wrap gap-6 ${getJustifyClass(teamContentAlignment)}`}>
             {pageContent.team.members.map((member) => (
-              <Card key={member.name} className="p-6 text-center">
-                <div className="mx-auto h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="h-full w-full object-cover"
-                  />
+              <Card
+                key={member.name}
+                className={`w-full p-6 sm:w-[calc((100%_-_1.5rem)/2)] xl:w-[calc((100%_-_4.5rem)/4)] ${getTextAlignClass(
+                  teamContentAlignment
+                )}`}
+              >
+                <div className={`flex ${getFlexAlignClass(teamContentAlignment)}`}>
+                  <div className="h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 </div>
                 <h3 className="mt-5 text-xl font-bold">{member.name}</h3>
                 <p className="mt-2 text-sm text-ink-500">{member.role}</p>
@@ -256,9 +289,9 @@ function AboutPreview({ config }: { config: SiteConfig }) {
       </section>
     </main>
   );
-}
+});
 
-function ContactPreview({ config }: { config: SiteConfig }) {
+const ContactPreview = memo(function ContactPreview({ config }: { config: SiteConfig }) {
   const pageContent = config.content.contactPage;
 
   return (
@@ -325,28 +358,47 @@ function ContactPreview({ config }: { config: SiteConfig }) {
       </section>
     </main>
   );
-}
+});
 
 function renderPreviewPage(config: SiteConfig, activeSection: AdminEditorSectionId) {
-  switch (activeSection) {
-    case "products":
-      return <ProductsPreview config={config} />;
-    case "blogs":
-      return <BlogsPreview config={config} />;
-    case "about":
-      return <AboutPreview config={config} />;
-    case "contact":
-      return <ContactPreview config={config} />;
-    case "home":
-    default:
-      return <HomePreview config={config} />;
-  }
+  return (
+    <Suspense fallback={<div className="h-96 bg-surface-subtle" />}>
+      {(() => {
+        switch (activeSection) {
+          case "products":
+            return <ProductsPreview config={config} />;
+          case "blogs":
+            return <BlogsPreview config={config} />;
+          case "about":
+            return <AboutPreview config={config} />;
+          case "contact":
+            return <ContactPreview config={config} />;
+          case "home":
+          default:
+            return <HomePreview config={config} />;
+        }
+      })()}
+    </Suspense>
+  );
 }
 
-export function SiteConfigPreview({ config, activeSection }: SiteConfigPreviewProps) {
+const MemoizedSectionRenderer = memo(SectionRenderer);
+const MemoizedProductCard = memo(ProductCard);
+
+const SiteConfigPreviewComponent = function SiteConfigPreview({
+  config,
+  activeSection
+}: SiteConfigPreviewProps) {
   return (
     <PreviewShell config={config} activeSection={activeSection}>
       {renderPreviewPage(config, activeSection)}
     </PreviewShell>
   );
-}
+};
+
+export const SiteConfigPreview = memo(
+  SiteConfigPreviewComponent,
+  (prevProps, nextProps) =>
+    prevProps.config === nextProps.config &&
+    prevProps.activeSection === nextProps.activeSection
+);
