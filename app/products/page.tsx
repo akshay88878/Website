@@ -26,8 +26,8 @@ export default async function ProductsPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.eyebrow}
           </p>
-          <h1 className="section-title mt-4">{pageContent.title}</h1>
-          <p className="section-copy mt-5">{pageContent.description}</p>
+          <h1 className="section-title mt-4 whitespace-pre-line">{pageContent.title}</h1>
+          <p className="section-copy mt-5 whitespace-pre-line">{pageContent.description}</p>
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">

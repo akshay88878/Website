@@ -14,8 +14,10 @@ export function ProductCard({ product, labels }: ProductCardProps) {
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
             {labels.eyebrow}
           </p>
-          <h2 className="mt-4 text-2xl font-bold">{product.title}</h2>
-          <p className="mt-4 text-base text-ink-600">{product.description}</p>
+          <h2 className="mt-4 whitespace-pre-line text-2xl font-bold">{product.title}</h2>
+          <p className="mt-4 whitespace-pre-line text-base text-ink-600">
+            {product.description}
+          </p>
         </div>
 
         <div className="mt-8 flex flex-1 flex-col gap-6">
@@ -43,7 +45,7 @@ export function ProductCard({ product, labels }: ProductCardProps) {
               {product.features.map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <span className="mt-2 h-2 w-2 rounded-full bg-accent-400" />
-                  <span>{feature}</span>
+                  <span className="whitespace-pre-line">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -53,7 +55,7 @@ export function ProductCard({ product, labels }: ProductCardProps) {
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
               {labels.useCaseHeading}
             </h3>
-            <p className="mt-3 text-sm text-ink-600">{product.useCase}</p>
+            <p className="mt-3 whitespace-pre-line text-sm text-ink-600">{product.useCase}</p>
           </section>
         </div>
       </div>

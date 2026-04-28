@@ -29,10 +29,10 @@ export default async function ContactPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.eyebrow}
             </p>
-            <h1 className="mt-4 text-4xl font-bold md:text-5xl">
+            <h1 className="mt-4 whitespace-pre-line text-4xl font-bold md:text-5xl">
               {pageContent.title}
             </h1>
-            <p className="mt-5 text-base">{pageContent.description}</p>
+            <p className="mt-5 whitespace-pre-line text-base">{pageContent.description}</p>
 
             <div className="mt-10 space-y-8">
               <div>
@@ -78,10 +78,10 @@ export default async function ContactPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.form.eyebrow}
             </p>
-            <h2 className="mt-4 text-3xl font-bold md:text-4xl">
+            <h2 className="mt-4 whitespace-pre-line text-3xl font-bold md:text-4xl">
               {pageContent.form.title}
             </h2>
-            <p className="mt-5 text-base">{pageContent.form.description}</p>
+            <p className="mt-5 whitespace-pre-line text-base">{pageContent.form.description}</p>
 
             <div className="mt-8">
               <EnquiryForm formConfig={pageContent.form} />
