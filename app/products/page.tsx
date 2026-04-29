@@ -23,7 +23,7 @@ export default async function ProductsPage() {
     <main className="page-shell py-16 md:py-20">
       <section className="container">
         <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+          <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.eyebrow}
           </p>
           <h1 className="section-title mt-4 whitespace-pre-line">{pageContent.title}</h1>

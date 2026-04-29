@@ -36,7 +36,7 @@ export default async function AboutPage() {
       <section className="container space-y-14">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.vision.eyebrow}
             </p>
             <h1 className="mt-4 whitespace-pre-line text-4xl font-bold md:text-5xl">
@@ -46,13 +46,13 @@ export default async function AboutPage() {
           </Card>
 
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.ceoMessage.eyebrow}
             </p>
             <p className="mt-4 whitespace-pre-line text-lg text-[color:var(--theme-body-text)]">
               {pageContent.ceoMessage.quote}
             </p>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+            <p className="mt-6 whitespace-pre-line text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
               {pageContent.ceoMessage.signature}
             </p>
           </Card>
@@ -63,7 +63,7 @@ export default async function AboutPage() {
             teamHeadingAlignment
           )} ${getTextAlignClass(teamHeadingAlignment)}`}
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+          <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.team.eyebrow}
           </p>
           <h2 className="section-title mt-4 whitespace-pre-line">{pageContent.team.title}</h2>
@@ -87,8 +87,8 @@ export default async function AboutPage() {
                     />
                   </div>
                 </div>
-                <h3 className="mt-5 text-xl font-bold">{member.name}</h3>
-                <p className="mt-2 text-sm text-ink-500">{member.role}</p>
+                <h3 className="mt-5 whitespace-pre-line text-xl font-bold">{member.name}</h3>
+                <p className="mt-2 whitespace-pre-line text-sm text-ink-500">{member.role}</p>
               </Card>
             ))}
           </div>

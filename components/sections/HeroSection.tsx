@@ -24,7 +24,7 @@ export function HeroSection({ data, section }: HeroSectionProps) {
         )}
       >
         <div className={cn("animate-fade-in-up", getTextAlignClass(alignment))}>
-          <span className="theme-eyebrow inline-flex rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] shadow-sm">
+          <span className="theme-eyebrow inline-flex whitespace-pre-line rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] shadow-sm">
             {data.eyebrow}
           </span>
           <h1 className="mt-8 whitespace-pre-line text-5xl font-bold leading-tight md:text-6xl lg:max-w-xl">

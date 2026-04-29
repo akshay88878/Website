@@ -61,7 +61,7 @@ export function EnquiryForm({ formConfig }: EnquiryFormProps) {
       <div>
         <label
           htmlFor="name"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.nameLabel}
         </label>
@@ -79,7 +79,7 @@ export function EnquiryForm({ formConfig }: EnquiryFormProps) {
       <div>
         <label
           htmlFor="email"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.emailLabel}
         </label>
@@ -98,7 +98,7 @@ export function EnquiryForm({ formConfig }: EnquiryFormProps) {
       <div>
         <label
           htmlFor="address"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.addressLabel}
         </label>
@@ -116,7 +116,7 @@ export function EnquiryForm({ formConfig }: EnquiryFormProps) {
       <div>
         <label
           htmlFor="purpose"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.purposeLabel}
         </label>

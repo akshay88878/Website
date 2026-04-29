@@ -84,7 +84,10 @@ const ContactFormPreview = memo(function ContactFormPreview({ config }: { config
   return (
     <form className="space-y-5" onSubmit={(event) => event.preventDefault()}>
       <div>
-        <label htmlFor="preview-name" className="mb-2 block text-sm font-semibold text-ink-800">
+        <label
+          htmlFor="preview-name"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
+        >
           {formConfig.fields.nameLabel}
         </label>
         <Input
@@ -97,7 +100,10 @@ const ContactFormPreview = memo(function ContactFormPreview({ config }: { config
       </div>
 
       <div>
-        <label htmlFor="preview-email" className="mb-2 block text-sm font-semibold text-ink-800">
+        <label
+          htmlFor="preview-email"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
+        >
           {formConfig.fields.emailLabel}
         </label>
         <Input
@@ -113,7 +119,7 @@ const ContactFormPreview = memo(function ContactFormPreview({ config }: { config
       <div>
         <label
           htmlFor="preview-address"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.addressLabel}
         </label>
@@ -129,7 +135,7 @@ const ContactFormPreview = memo(function ContactFormPreview({ config }: { config
       <div>
         <label
           htmlFor="preview-purpose"
-          className="mb-2 block text-sm font-semibold text-ink-800"
+          className="mb-2 block whitespace-pre-line text-sm font-semibold text-ink-800"
         >
           {formConfig.fields.purposeLabel}
         </label>
@@ -166,7 +172,7 @@ const ProductsPreview = memo(function ProductsPreview({ config }: { config: Site
     <main className="page-shell py-16 md:py-20">
       <section className="container">
         <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+          <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.eyebrow}
           </p>
           <h1 className="section-title mt-4 whitespace-pre-line">{pageContent.title}</h1>
@@ -195,7 +201,7 @@ const BlogsPreview = memo(function BlogsPreview({ config }: { config: SiteConfig
       <section className="container">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <article className="glass-panel p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.eyebrow}
             </p>
             <h1 className="mt-4 whitespace-pre-line font-display text-4xl font-bold md:text-5xl">
@@ -203,7 +209,9 @@ const BlogsPreview = memo(function BlogsPreview({ config }: { config: SiteConfig
             </h1>
             <div className="prose prose-lg mt-8 max-w-none prose-headings:font-display prose-headings:text-[color:var(--theme-body-text)] prose-p:text-[color:var(--theme-muted-text)] prose-strong:text-[color:var(--theme-body-text)]">
               {pageContent.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+                <p key={paragraph} className="whitespace-pre-line">
+                  {paragraph}
+                </p>
               ))}
             </div>
           </article>
@@ -233,7 +241,7 @@ const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig
       <section className="container space-y-14">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.vision.eyebrow}
             </p>
             <h1 className="mt-4 whitespace-pre-line text-4xl font-bold md:text-5xl">
@@ -243,13 +251,13 @@ const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig
           </Card>
 
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.ceoMessage.eyebrow}
             </p>
             <p className="mt-4 whitespace-pre-line text-lg text-[color:var(--theme-body-text)]">
               {pageContent.ceoMessage.quote}
             </p>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+            <p className="mt-6 whitespace-pre-line text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
               {pageContent.ceoMessage.signature}
             </p>
           </Card>
@@ -260,7 +268,7 @@ const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig
             teamHeadingAlignment
           )} ${getTextAlignClass(teamHeadingAlignment)}`}
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+          <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
             {pageContent.team.eyebrow}
           </p>
           <h2 className="section-title mt-4 whitespace-pre-line">{pageContent.team.title}</h2>
@@ -282,8 +290,8 @@ const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig
                     />
                   </div>
                 </div>
-                <h3 className="mt-5 text-xl font-bold">{member.name}</h3>
-                <p className="mt-2 text-sm text-ink-500">{member.role}</p>
+                <h3 className="mt-5 whitespace-pre-line text-xl font-bold">{member.name}</h3>
+                <p className="mt-2 whitespace-pre-line text-sm text-ink-500">{member.role}</p>
               </Card>
             ))}
           </div>
@@ -301,7 +309,7 @@ const ContactPreview = memo(function ContactPreview({ config }: { config: SiteCo
       <section className="container">
         <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.eyebrow}
             </p>
             <h1 className="mt-4 whitespace-pre-line text-4xl font-bold md:text-5xl">
@@ -311,25 +319,29 @@ const ContactPreview = memo(function ContactPreview({ config }: { config: SiteCo
 
             <div className="mt-10 space-y-8">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.registeredAddressHeading}
                 </h2>
                 <div className="mt-3 space-y-2 text-sm text-ink-600">
                   {pageContent.info.address.map((line) => (
-                    <p key={line}>{line}</p>
+                    <p key={line} className="whitespace-pre-line">
+                      {line}
+                    </p>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.emailHeading}
                 </h2>
-                <p className="mt-3 text-sm text-ink-600">{pageContent.info.email}</p>
+                <p className="mt-3 whitespace-pre-line text-sm text-ink-600">
+                  {pageContent.info.email}
+                </p>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.socialHeading}
                 </h2>
                 <div className="mt-3 flex flex-wrap gap-3">
@@ -337,7 +349,7 @@ const ContactPreview = memo(function ContactPreview({ config }: { config: SiteCo
                     <Link
                       key={link.label}
                       href={link.url}
-                      className="rounded-full border border-surface-border bg-white px-4 py-2 text-sm font-medium text-ink-600"
+                      className="whitespace-pre-line rounded-full border border-surface-border bg-white px-4 py-2 text-sm font-medium text-ink-600"
                     >
                       {link.label}
                     </Link>
@@ -348,7 +360,7 @@ const ContactPreview = memo(function ContactPreview({ config }: { config: SiteCo
           </Card>
 
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.form.eyebrow}
             </p>
             <h2 className="mt-4 whitespace-pre-line text-3xl font-bold md:text-4xl">

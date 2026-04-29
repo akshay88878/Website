@@ -18,7 +18,7 @@ export function HighlightsSection({ data, section }: HighlightsSectionProps) {
           {data.items.map((item) => (
             <div
               key={item}
-              className="glass-panel rounded-2xl px-4 py-4 text-sm font-medium text-[color:var(--theme-body-text)]"
+              className="glass-panel whitespace-pre-line rounded-2xl px-4 py-4 text-sm font-medium text-[color:var(--theme-body-text)]"
             >
               {item}
             </div>

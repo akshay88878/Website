@@ -26,7 +26,7 @@ export default async function ContactPage() {
       <section className="container">
         <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.eyebrow}
             </p>
             <h1 className="mt-4 whitespace-pre-line text-4xl font-bold md:text-5xl">
@@ -36,25 +36,29 @@ export default async function ContactPage() {
 
             <div className="mt-10 space-y-8">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.registeredAddressHeading}
                 </h2>
                 <div className="mt-3 space-y-2 text-sm text-ink-600">
                   {pageContent.info.address.map((line) => (
-                    <p key={line}>{line}</p>
+                    <p key={line} className="whitespace-pre-line">
+                      {line}
+                    </p>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.emailHeading}
                 </h2>
-                <p className="mt-3 text-sm text-ink-600">{pageContent.info.email}</p>
+                <p className="mt-3 whitespace-pre-line text-sm text-ink-600">
+                  {pageContent.info.email}
+                </p>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+                <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
                   {pageContent.info.socialHeading}
                 </h2>
                 <div className="mt-3 flex flex-wrap gap-3">
@@ -64,7 +68,7 @@ export default async function ContactPage() {
                       href={link.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-full border border-surface-border bg-white px-4 py-2 text-sm font-medium text-ink-600 hover:border-[color:var(--theme-primary-border)] hover:text-[var(--theme-primary)]"
+                      className="whitespace-pre-line rounded-full border border-surface-border bg-white px-4 py-2 text-sm font-medium text-ink-600 hover:border-[color:var(--theme-primary-border)] hover:text-[var(--theme-primary)]"
                     >
                       {link.label}
                     </Link>
@@ -75,7 +79,7 @@ export default async function ContactPage() {
           </Card>
 
           <Card className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
+            <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.form.eyebrow}
             </p>
             <h2 className="mt-4 whitespace-pre-line text-3xl font-bold md:text-4xl">

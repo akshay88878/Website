@@ -46,7 +46,7 @@ export function Navbar({ navigation, brandName, activePath }: NavbarProps) {
                   key={item.url}
                   href={item.url}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700",
+                    "whitespace-pre-line rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700",
                     isActive && "bg-brand-50 text-brand-700"
                   )}
                 >
@@ -84,7 +84,7 @@ export function Navbar({ navigation, brandName, activePath }: NavbarProps) {
                   key={item.url}
                   href={item.url}
                   className={cn(
-                    "rounded-2xl px-4 py-3 text-sm font-medium text-ink-600 transition hover:bg-brand-50 hover:text-brand-700",
+                    "whitespace-pre-line rounded-2xl px-4 py-3 text-sm font-medium text-ink-600 transition hover:bg-brand-50 hover:text-brand-700",
                     isActive && "bg-brand-50 text-brand-700"
                   )}
                 >

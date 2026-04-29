@@ -22,25 +22,27 @@ export function Footer({ footer }: FooterProps) {
                 textClassName="text-base tracking-[0.16em] sm:text-lg"
               />
             </Link>
-            <p className="mt-4 max-w-md text-sm text-ink-600">
+            <p className="mt-4 max-w-md whitespace-pre-line text-sm text-ink-600">
               {footer.text}
             </p>
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+            <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
               {footer.contactHeading}
             </h2>
             <div className="mt-4 space-y-2 text-sm text-ink-600">
-              <p>{footer.email}</p>
+              <p className="whitespace-pre-line">{footer.email}</p>
               {footer.address.map((line) => (
-                <p key={line}>{line}</p>
+                <p key={line} className="whitespace-pre-line">
+                  {line}
+                </p>
               ))}
             </div>
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
+            <h2 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.2em] text-ink-500">
               {footer.socialHeading}
             </h2>
             <div className="mt-4 flex flex-col gap-3 text-sm">
@@ -50,7 +52,7 @@ export function Footer({ footer }: FooterProps) {
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-ink-600 hover:text-brand-700"
+                  className="whitespace-pre-line text-ink-600 hover:text-brand-700"
                 >
                   {link.label}
                 </Link>

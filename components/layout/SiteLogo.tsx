@@ -38,7 +38,7 @@ export function SiteLogo({
       </span>
       <span
         className={cn(
-          "font-display text-lg font-bold tracking-[0.2em] text-ink-900",
+          "whitespace-pre-line font-display text-lg font-bold tracking-[0.2em] text-ink-900",
           textClassName
         )}
       >
