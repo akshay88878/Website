@@ -1,6 +1,7 @@
-import { memo, type ReactNode } from "react";
+import { memo } from "react";
+import { FirebaseImageField } from "@/components/admin/FirebaseImageField";
 import type { Alignment, ContainerWidth, SiteConfig } from "@/types/siteConfig";
-import { EditorCard, Field, LinkListEditor, selectClassName, checkboxClassName } from "./formComponents";
+import { EditorCard, Field, LinkListEditor, selectClassName } from "./formComponents";
 import { setField } from "./formUtils";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -81,6 +82,25 @@ export const HomeFormSection = memo(function HomeFormSection({
         </Field>
 
         <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Hero image">
+            <FirebaseImageField
+              value={config.content.hero.illustrationSrc}
+              onChange={(value) => updateField(["content", "hero", "illustrationSrc"], value)}
+              uploadPath="site-config/blog"
+              previewAlt={config.content.hero.illustrationAlt || "Hero image"}
+            />
+          </Field>
+          <Field label="Hero image alt text">
+            <Input
+              value={config.content.hero.illustrationAlt}
+              onChange={(event) =>
+                updateField(["content", "hero", "illustrationAlt"], event.target.value)
+              }
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
           <Field label="Primary CTA label">
             <Input
               value={config.content.hero.primaryCta.label}
@@ -150,6 +170,30 @@ export const HomeFormSection = memo(function HomeFormSection({
             </select>
           </Field>
         </div>
+
+        <Field
+          label="Hero top spacing"
+          hint={`Controls the space below the navbar. Current value: ${config.content.hero.topSpacing}%`}
+        >
+          <div className="space-y-3">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={config.content.hero.topSpacing}
+              onChange={(event) =>
+                updateField(["content", "hero", "topSpacing"], Number(event.target.value))
+              }
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-border accent-[var(--theme-primary)]"
+            />
+            <div className="flex items-center justify-between text-xs text-ink-500">
+              <span>Less</span>
+              <span>{config.content.hero.topSpacing}%</span>
+              <span>More</span>
+            </div>
+          </div>
+        </Field>
       </EditorCard>
     </>
   );

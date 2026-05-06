@@ -1,9 +1,20 @@
 import { memo } from "react";
-import type { Alignment, ContainerWidth, SiteConfig } from "@/types/siteConfig";
-import { EditorCard, Field, selectClassName } from "./formComponents";
-import { setField } from "./formUtils";
+import { Plus, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import type {
+  Alignment,
+  ContainerWidth,
+  ProductDetailSection,
+  ProductDetailSectionStyle,
+  ProductItem,
+  SiteConfig
+} from "@/types/siteConfig";
+
+import { EditorCard, Field, selectClassName } from "./formComponents";
+import { joinLines, parseLines, removeAt, replaceAt, setField } from "./formUtils";
 
 type FormSectionProps = {
   config: SiteConfig;
@@ -12,6 +23,23 @@ type FormSectionProps = {
 
 const alignmentOptions: Alignment[] = ["left", "center", "right"];
 const widthOptions: ContainerWidth[] = ["narrow", "default", "wide", "full"];
+const detailSectionStyleOptions: ProductDetailSectionStyle[] = ["tags", "list", "text"];
+
+function createEmptyDetailSection(): ProductDetailSection {
+  return {
+    heading: "",
+    style: "text",
+    body: ""
+  };
+}
+
+function createEmptyProduct(): ProductItem {
+  return {
+    title: "",
+    description: "",
+    detailSections: []
+  };
+}
 
 export const ProductsFormSection = memo(function ProductsFormSection({
   config,
@@ -19,6 +47,24 @@ export const ProductsFormSection = memo(function ProductsFormSection({
 }: FormSectionProps) {
   const updateField = (path: string[], value: unknown) => onChange(setField(config, path, value));
   const pageContent = config.content.productsPage;
+
+  const updateProducts = (products: ProductItem[]) =>
+    updateField(["content", "productsPage", "products"], products);
+
+  const updateProduct = (productIndex: number, nextProduct: ProductItem) =>
+    updateProducts(replaceAt(pageContent.products, productIndex, nextProduct));
+
+  const updateDetailSection = (
+    productIndex: number,
+    sectionIndex: number,
+    nextSection: ProductDetailSection
+  ) => {
+    const product = pageContent.products[productIndex];
+    updateProduct(productIndex, {
+      ...product,
+      detailSections: replaceAt(product.detailSections, sectionIndex, nextSection)
+    });
+  };
 
   return (
     <EditorCard
@@ -103,48 +149,201 @@ export const ProductsFormSection = memo(function ProductsFormSection({
         </Field>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Product card eyebrow">
-          <Input
-            value={pageContent.cardLabels.eyebrow}
-            onChange={(event) =>
-              updateField(["content", "productsPage", "cardLabels", "eyebrow"], event.target.value)
-            }
-          />
-        </Field>
-        <Field label="Tech stack heading">
-          <Input
-            value={pageContent.cardLabels.techStackHeading}
-            onChange={(event) =>
-              updateField(
-                ["content", "productsPage", "cardLabels", "techStackHeading"],
-                event.target.value
-              )
-            }
-          />
-        </Field>
-        <Field label="Features heading">
-          <Input
-            value={pageContent.cardLabels.featuresHeading}
-            onChange={(event) =>
-              updateField(
-                ["content", "productsPage", "cardLabels", "featuresHeading"],
-                event.target.value
-              )
-            }
-          />
-        </Field>
-        <Field label="Use case heading">
-          <Input
-            value={pageContent.cardLabels.useCaseHeading}
-            onChange={(event) =>
-              updateField(
-                ["content", "productsPage", "cardLabels", "useCaseHeading"],
-                event.target.value
-              )
-            }
-          />
-        </Field>
+      <Field label="Product card eyebrow">
+        <Input
+          value={pageContent.cardLabels.eyebrow}
+          onChange={(event) =>
+            updateField(["content", "productsPage", "cardLabels", "eyebrow"], event.target.value)
+          }
+        />
+      </Field>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-ink-900">Products list</p>
+          <Button variant="outline" size="sm" onClick={() => updateProducts([...pageContent.products, createEmptyProduct()])}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add product
+          </Button>
+        </div>
+
+        {pageContent.products.length ? (
+          pageContent.products.map((product, productIndex) => (
+            <div
+              key={`product-${productIndex}`}
+              className="rounded-3xl border border-surface-border p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-ink-900">
+                  Product {productIndex + 1}
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => updateProducts(removeAt(pageContent.products, productIndex))}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove
+                </Button>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <Field label="Product title">
+                  <Input
+                    value={product.title}
+                    onChange={(event) =>
+                      updateProduct(productIndex, {
+                        ...product,
+                        title: event.target.value
+                      })
+                    }
+                  />
+                </Field>
+                <Field label="Product description">
+                  <Textarea
+                    value={product.description}
+                    onChange={(event) =>
+                      updateProduct(productIndex, {
+                        ...product,
+                        description: event.target.value
+                      })
+                    }
+                    className="min-h-[120px]"
+                  />
+                </Field>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink-900">Product sections</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      updateProduct(productIndex, {
+                        ...product,
+                        detailSections: [...product.detailSections, createEmptyDetailSection()]
+                      })
+                    }
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add section
+                  </Button>
+                </div>
+
+                {product.detailSections.length ? (
+                  product.detailSections.map((section, sectionIndex) => (
+                    <div
+                      key={`product-${productIndex}-section-${sectionIndex}`}
+                      className="rounded-3xl border border-surface-border bg-surface/40 p-4"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-ink-900">
+                          Section {sectionIndex + 1}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            updateProduct(productIndex, {
+                              ...product,
+                              detailSections: removeAt(product.detailSections, sectionIndex)
+                            })
+                          }
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Remove
+                        </Button>
+                      </div>
+
+                      <div className="mt-4 grid gap-4 md:grid-cols-2">
+                        <Field
+                          label="Section heading"
+                          hint="Leave blank if you want content without a heading."
+                        >
+                          <Input
+                            value={section.heading}
+                            onChange={(event) =>
+                              updateDetailSection(productIndex, sectionIndex, {
+                                ...section,
+                                heading: event.target.value
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="Section style">
+                          <select
+                            className={selectClassName}
+                            value={section.style}
+                            onChange={(event) =>
+                              updateDetailSection(productIndex, sectionIndex, {
+                                heading: section.heading,
+                                style: event.target.value as ProductDetailSectionStyle,
+                                items:
+                                  event.target.value === "text"
+                                    ? undefined
+                                    : section.items ?? [],
+                                body:
+                                  event.target.value === "text"
+                                    ? section.body ?? ""
+                                    : undefined
+                              })
+                            }
+                          >
+                            {detailSectionStyleOptions.map((style) => (
+                              <option key={style} value={style}>
+                                {style}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                      </div>
+
+                      {section.style === "text" ? (
+                        <Field label="Section content">
+                          <Textarea
+                            value={section.body ?? ""}
+                            onChange={(event) =>
+                              updateDetailSection(productIndex, sectionIndex, {
+                                ...section,
+                                body: event.target.value
+                              })
+                            }
+                            className="min-h-[120px]"
+                          />
+                        </Field>
+                      ) : (
+                        <Field
+                          label="Section items"
+                          hint="Enter one item per line."
+                        >
+                          <Textarea
+                            value={joinLines(section.items ?? [])}
+                            onChange={(event) =>
+                              updateDetailSection(productIndex, sectionIndex, {
+                                ...section,
+                                items: parseLines(event.target.value)
+                              })
+                            }
+                            className="min-h-[120px]"
+                          />
+                        </Field>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-3xl border border-dashed border-surface-border p-4 text-sm text-ink-500">
+                    No detail sections configured for this product.
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-3xl border border-dashed border-surface-border p-4 text-sm text-ink-500">
+            No products configured.
+          </div>
+        )}
       </div>
     </EditorCard>
   );

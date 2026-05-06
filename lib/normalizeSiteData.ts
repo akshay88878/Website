@@ -5,10 +5,115 @@ import type { SiteConfig } from "@/types/siteConfig";
 
 const alignmentSchema = z.enum(["left", "center", "right"]);
 const containerWidthSchema = z.enum(["narrow", "default", "wide", "full"]);
+const heroTopSpacingSchema = z.preprocess((value) => {
+  if (value === "tight") {
+    return 20;
+  }
+
+  if (value === "default") {
+    return 50;
+  }
+
+  if (value === "relaxed") {
+    return 80;
+  }
+
+  return value;
+}, z.number().min(0).max(100));
+const productDetailSectionSchema = z.object({
+  heading: z.string(),
+  style: z.enum(["tags", "list", "text"]),
+  items: z.array(z.string().min(1)).optional(),
+  body: z.string().optional()
+});
+const teamMemberSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  image: z.string().min(1)
+});
+const teamGroupSchema = z.object({
+  heading: z.string(),
+  members: z.array(teamMemberSchema)
+});
 const linkSchema = z.object({
   label: z.string().min(1),
   url: z.string().min(1)
 });
+
+const productSchema = z.preprocess((value) => {
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  if (Array.isArray(value.detailSections)) {
+    return value;
+  }
+
+  const detailSections = [
+    Array.isArray(value.techStack) && value.techStack.length
+      ? {
+          heading: "Tech Stack",
+          style: "tags",
+          items: value.techStack
+        }
+      : null,
+    Array.isArray(value.features) && value.features.length
+      ? {
+          heading: "Features",
+          style: "list",
+          items: value.features
+        }
+      : null,
+    typeof value.useCase === "string" && value.useCase.trim()
+      ? {
+          heading: "Use Case",
+          style: "text",
+          body: value.useCase
+        }
+      : null
+  ].filter(Boolean);
+
+  return {
+    ...value,
+    detailSections
+  };
+}, z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  detailSections: z.array(productDetailSectionSchema)
+}));
+
+const aboutTeamSchema = z.preprocess((value) => {
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  if (Array.isArray(value.groups)) {
+    return value;
+  }
+
+  if (Array.isArray(value.members)) {
+    return {
+      ...value,
+      groups: [
+        {
+          heading: "",
+          members: value.members
+        }
+      ]
+    };
+  }
+
+  return value;
+}, z.object({
+  eyebrow: z.string().min(1),
+  title: z.string().min(1),
+  groups: z.array(teamGroupSchema),
+  alignment: alignmentSchema.optional(),
+  headingAlignment: alignmentSchema.optional(),
+  contentAlignment: alignmentSchema.optional(),
+  width: containerWidthSchema.optional()
+}));
 
 const siteConfigSchema = z.object({
   sections: z.array(
@@ -41,7 +146,8 @@ const siteConfigSchema = z.object({
       illustrationSrc: z.string().min(1),
       illustrationAlt: z.string().min(1),
       alignment: alignmentSchema,
-      width: containerWidthSchema
+      width: containerWidthSchema,
+      topSpacing: heroTopSpacingSchema
     }),
     highlights: z.object({
       items: z.array(z.string().min(1)),
@@ -57,20 +163,9 @@ const siteConfigSchema = z.object({
       alignment: alignmentSchema.optional(),
       width: containerWidthSchema.optional(),
       cardLabels: z.object({
-        eyebrow: z.string().min(1),
-        techStackHeading: z.string().min(1),
-        featuresHeading: z.string().min(1),
-        useCaseHeading: z.string().min(1)
+        eyebrow: z.string().min(1)
       }),
-      products: z.array(
-        z.object({
-          title: z.string().min(1),
-          description: z.string().min(1),
-          techStack: z.array(z.string().min(1)),
-          features: z.array(z.string().min(1)),
-          useCase: z.string().min(1)
-        })
-      )
+      products: z.array(productSchema)
     }),
     blogPage: z.object({
       metaTitle: z.string().min(1),
@@ -100,21 +195,7 @@ const siteConfigSchema = z.object({
         alignment: alignmentSchema.optional(),
         width: containerWidthSchema.optional()
       }),
-      team: z.object({
-        eyebrow: z.string().min(1),
-        title: z.string().min(1),
-        members: z.array(
-          z.object({
-            name: z.string().min(1),
-            role: z.string().min(1),
-            image: z.string().min(1)
-          })
-        ),
-        alignment: alignmentSchema.optional(),
-        headingAlignment: alignmentSchema.optional(),
-        contentAlignment: alignmentSchema.optional(),
-        width: containerWidthSchema.optional()
-      })
+      team: aboutTeamSchema
     }),
     contactPage: z.object({
       metaTitle: z.string().min(1),

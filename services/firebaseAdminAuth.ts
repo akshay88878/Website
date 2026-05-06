@@ -37,7 +37,7 @@ export function isFirebaseAdminAuthConfigured() {
   return Boolean(getFirebaseProjectId());
 }
 
-function getFirebaseAdminIdTokenFromRequest(request: Request) {
+export function getFirebaseAdminIdTokenFromRequest(request: Request) {
   const authorizationHeader = request.headers.get("authorization");
 
   if (!authorizationHeader?.startsWith("Bearer ")) {

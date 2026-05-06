@@ -45,7 +45,8 @@ export const defaultSiteConfig: SiteConfig = {
       illustrationSrc: "/images/hero-illustration.svg",
       illustrationAlt: "AI robot teaching learners in a modern digital classroom",
       alignment: "left",
-      width: "wide"
+      width: "wide",
+      topSpacing: 50
     },
     highlights: {
       items: [
@@ -67,42 +68,62 @@ export const defaultSiteConfig: SiteConfig = {
       alignment: "center",
       width: "default",
       cardLabels: {
-        eyebrow: "Product",
-        techStackHeading: "Tech Stack",
-        featuresHeading: "Features",
-        useCaseHeading: "Use Case"
+        eyebrow: "Product"
       },
       products: [
         {
           title: "AI Teaching System",
           description:
             "A classroom intelligence platform that helps educators personalize lessons, monitor learner progress, and deliver consistent outcomes.",
-          techStack: ["Next.js", "TypeScript", "Firebase", "Analytics"],
-          features: [
-            "Adaptive lesson planning",
-            "Student insight dashboards",
-            "Teacher workflow automation"
-          ],
-          useCase:
-            "Designed for schools and training centers that want AI-assisted teaching operations without increasing faculty overhead."
+          detailSections: [
+            {
+              heading: "Tech Stack",
+              style: "tags",
+              items: ["Next.js", "TypeScript", "Firebase", "Analytics"]
+            },
+            {
+              heading: "Features",
+              style: "list",
+              items: [
+                "Adaptive lesson planning",
+                "Student insight dashboards",
+                "Teacher workflow automation"
+              ]
+            },
+            {
+              heading: "Use Case",
+              style: "text",
+              body:
+                "Designed for schools and training centers that want AI-assisted teaching operations without increasing faculty overhead."
+            }
+          ]
         },
         {
           title: "ShravanBot",
           description:
             "An AI companion robot built to support engagement, conversation practice, and guided learning experiences in modern classrooms.",
-          techStack: [
-            "Embedded AI",
-            "Voice Interfaces",
-            "Computer Vision",
-            "Cloud Sync"
-          ],
-          features: [
-            "Interactive voice guidance",
-            "Emotion-aware engagement",
-            "Hybrid classroom companion workflows"
-          ],
-          useCase:
-            "Built for experiential learning programs where institutions want a physical AI presence to increase attention and participation."
+          detailSections: [
+            {
+              heading: "Technology",
+              style: "tags",
+              items: ["Embedded AI", "Voice Interfaces", "Computer Vision", "Cloud Sync"]
+            },
+            {
+              heading: "Features",
+              style: "list",
+              items: [
+                "Interactive voice guidance",
+                "Emotion-aware engagement",
+                "Hybrid classroom companion workflows"
+              ]
+            },
+            {
+              heading: "Use Case",
+              style: "text",
+              body:
+                "Built for experiential learning programs where institutions want a physical AI presence to increase attention and participation."
+            }
+          ]
         }
       ]
     },
@@ -146,26 +167,36 @@ export const defaultSiteConfig: SiteConfig = {
       team: {
         eyebrow: "Our Team",
         title: "Cross-functional operators with an education-first lens",
-        members: [
+        groups: [
           {
-            name: "Aarav Mehta",
-            role: "Founder & CEO",
-            image: "/images/team/aarav.svg"
+            heading: "Our Mentors",
+            members: [
+              {
+                name: "Aarav Mehta",
+                role: "Founder & CEO",
+                image: "/images/team/aarav.svg"
+              },
+              {
+                name: "Naina Kapoor",
+                role: "Head of Product Design",
+                image: "/images/team/naina.svg"
+              }
+            ]
           },
           {
-            name: "Naina Kapoor",
-            role: "Head of Product Design",
-            image: "/images/team/naina.svg"
-          },
-          {
-            name: "Rohan Iyer",
-            role: "Lead AI Systems Engineer",
-            image: "/images/team/rohan.svg"
-          },
-          {
-            name: "Mira Sethi",
-            role: "Director, School Partnerships",
-            image: "/images/team/mira.svg"
+            heading: "Current Team",
+            members: [
+              {
+                name: "Rohan Iyer",
+                role: "Lead AI Systems Engineer",
+                image: "/images/team/rohan.svg"
+              },
+              {
+                name: "Mira Sethi",
+                role: "Director, School Partnerships",
+                image: "/images/team/mira.svg"
+              }
+            ]
           }
         ],
         alignment: "center",

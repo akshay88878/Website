@@ -1,5 +1,6 @@
 import { memo } from "react";
 import type { Alignment, ContainerWidth, SiteConfig } from "@/types/siteConfig";
+import { FirebaseImageField } from "@/components/admin/FirebaseImageField";
 import { EditorCard, Field } from "./formComponents";
 import { setField, parseParagraphs, joinParagraphs } from "./formUtils";
 import { Input } from "@/components/ui/Input";
@@ -72,6 +73,25 @@ export const BlogsFormSection = memo(function BlogsFormSection({
           className="min-h-[220px] font-mono text-xs"
         />
       </Field>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Blog image">
+          <FirebaseImageField
+            value={pageContent.imageSrc}
+            onChange={(value) => updateField(["content", "blogPage", "imageSrc"], value)}
+            uploadPath="site-config/blog"
+            previewAlt={pageContent.imageAlt || "Blog preview image"}
+          />
+        </Field>
+        <Field label="Blog image alt text">
+          <Input
+            value={pageContent.imageAlt}
+            onChange={(event) =>
+              updateField(["content", "blogPage", "imageAlt"], event.target.value)
+            }
+          />
+        </Field>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Blog alignment">

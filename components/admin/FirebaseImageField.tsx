@@ -3,11 +3,10 @@
 import { type ChangeEvent, useRef, useState } from "react";
 
 import { Loader2, Upload } from "lucide-react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { getFirebaseStorage, hasFirebaseConfig } from "@/lib/firebase";
+import { getFirebaseAuth, hasFirebaseConfig } from "@/lib/firebase";
 
 type FirebaseImageFieldProps = {
   value: string;
@@ -55,19 +54,41 @@ export function FirebaseImageField({
     setError(null);
 
     try {
-      const storage = getFirebaseStorage();
-      const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`;
-      const objectPath = `${uploadPath}/${fileName}`;
-      const storageRef = ref(storage, objectPath);
+      // Get the current user's ID token
+      const auth = getFirebaseAuth();
+      const currentUser = auth.currentUser;
 
-      await uploadBytes(storageRef, file, {
-        contentType: file.type || "application/octet-stream",
-        cacheControl: "public,max-age=31536000"
+      if (!currentUser) {
+        throw new Error("You must be logged in to upload images.");
+      }
+
+      const idToken = await currentUser.getIdToken();
+
+      // Upload via backend endpoint
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("uploadPath", uploadPath);
+
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
+        body: formData
       });
 
-      const downloadUrl = await getDownloadURL(storageRef);
+      if (!response.ok) {
+        const errorData = (await response.json()) as { message?: string };
+        throw new Error(errorData.message || `Upload failed with status ${response.status}`);
+      }
 
-      onChange(downloadUrl);
+      const result = (await response.json()) as { success: boolean; url?: string; message?: string };
+
+      if (!result.success || !result.url) {
+        throw new Error(result.message || "Upload succeeded but no URL returned");
+      }
+
+      onChange(result.url);
       setMessage("Image uploaded to Firebase Storage.");
     } catch (uploadError) {
       setError(

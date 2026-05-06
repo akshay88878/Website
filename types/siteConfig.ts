@@ -56,6 +56,7 @@ export interface HeroContent {
   illustrationAlt: string;
   alignment: Alignment;
   width: ContainerWidth;
+  topSpacing: number;
 }
 
 export interface HighlightsContent {
@@ -67,9 +68,16 @@ export interface HighlightsContent {
 export interface ProductItem {
   title: string;
   description: string;
-  techStack: string[];
-  features: string[];
-  useCase: string;
+  detailSections: ProductDetailSection[];
+}
+
+export type ProductDetailSectionStyle = "tags" | "list" | "text";
+
+export interface ProductDetailSection {
+  heading: string;
+  style: ProductDetailSectionStyle;
+  items?: string[];
+  body?: string;
 }
 
 export interface ProductsPageContent {
@@ -82,9 +90,6 @@ export interface ProductsPageContent {
   width?: ContainerWidth;
   cardLabels: {
     eyebrow: string;
-    techStackHeading: string;
-    featuresHeading: string;
-    useCaseHeading: string;
   };
   products: ProductItem[];
 }
@@ -107,6 +112,11 @@ export interface TeamMember {
   image: string;
 }
 
+export interface TeamGroup {
+  heading: string;
+  members: TeamMember[];
+}
+
 export interface AboutPageContent {
   metaTitle: string;
   metaDescription: string;
@@ -127,7 +137,7 @@ export interface AboutPageContent {
   team: {
     eyebrow: string;
     title: string;
-    members: TeamMember[];
+    groups: TeamGroup[];
     alignment?: Alignment;
     headingAlignment?: Alignment;
     contentAlignment?: Alignment;

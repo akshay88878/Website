@@ -273,26 +273,35 @@ const AboutPreview = memo(function AboutPreview({ config }: { config: SiteConfig
           </p>
           <h2 className="section-title mt-4 whitespace-pre-line">{pageContent.team.title}</h2>
 
-          <div className={`mt-10 flex flex-wrap gap-6 ${getJustifyClass(teamContentAlignment)}`}>
-            {pageContent.team.members.map((member) => (
-              <Card
-                key={member.name}
-                className={`w-full p-6 sm:w-[calc((100%_-_1.5rem)/2)] xl:w-[calc((100%_-_4.5rem)/4)] ${getTextAlignClass(
-                  teamContentAlignment
-                )}`}
-              >
-                <div className={`flex ${getFlexAlignClass(teamContentAlignment)}`}>
-                  <div className="h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+          <div className="mt-10 space-y-10">
+            {pageContent.team.groups.map((group, groupIndex) => (
+              <div key={`${group.heading || "group"}-${groupIndex}`}>
+                {group.heading.trim() ? (
+                  <h3 className="mb-6 whitespace-pre-line text-xl font-bold">{group.heading}</h3>
+                ) : null}
+                <div className={`flex flex-wrap gap-6 ${getJustifyClass(teamContentAlignment)}`}>
+                  {group.members.map((member) => (
+                    <Card
+                      key={`${group.heading}-${member.name}`}
+                      className={`w-full p-6 sm:w-[calc((100%_-_1.5rem)/2)] xl:w-[calc((100%_-_4.5rem)/4)] ${getTextAlignClass(
+                        teamContentAlignment
+                      )}`}
+                    >
+                      <div className={`flex ${getFlexAlignClass(teamContentAlignment)}`}>
+                        <div className="h-28 w-28 overflow-hidden rounded-full border border-[color:var(--theme-primary-border)] bg-[var(--theme-primary-soft)]">
+                          <img
+                            src={member.image}
+                            alt={member.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      <h4 className="mt-5 whitespace-pre-line text-xl font-bold">{member.name}</h4>
+                      <p className="mt-2 whitespace-pre-line text-sm text-ink-500">{member.role}</p>
+                    </Card>
+                  ))}
                 </div>
-                <h3 className="mt-5 whitespace-pre-line text-xl font-bold">{member.name}</h3>
-                <p className="mt-2 whitespace-pre-line text-sm text-ink-500">{member.role}</p>
-              </Card>
+              </div>
             ))}
           </div>
         </div>

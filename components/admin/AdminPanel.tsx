@@ -2,7 +2,7 @@
 
 import { startTransition, useCallback, useEffect, useState, type FormEvent } from "react";
 import {
-  inMemoryPersistence,
+  browserLocalPersistence,
   setPersistence,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut
@@ -77,6 +77,7 @@ export function AdminPanel() {
   const [activeSection, setActiveSection] = useState<AdminEditorSectionId>("home");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isHumanConfirmed, setIsHumanConfirmed] = useState(false);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [editorValue, setEditorValue] = useState("");
   const [draftConfig, setDraftConfig] = useState<SiteConfig | null>(null);
@@ -97,6 +98,7 @@ export function AdminPanel() {
     setStatus("unauthorized");
     setEmail("");
     setPassword("");
+    setIsHumanConfirmed(false);
     setEditorValue("");
     setDraftConfig(null);
     setPreviewConfig(null);
@@ -189,7 +191,7 @@ export function AdminPanel() {
         try {
           const firebaseAuth = getFirebaseAuth();
 
-          await setPersistence(firebaseAuth, inMemoryPersistence);
+          await setPersistence(firebaseAuth, browserLocalPersistence);
 
           if (firebaseAuth.currentUser) {
             await firebaseSignOut(firebaseAuth).catch(() => undefined);
@@ -292,8 +294,15 @@ export function AdminPanel() {
       return;
     }
 
+    if (!isHumanConfirmed) {
+      setMessageTone("error");
+      setMessage('Confirm "I am not a robot" before signing in.');
+      setIsAuthenticating(false);
+      return;
+    }
+
     try {
-      await setPersistence(firebaseAuth, inMemoryPersistence);
+      await setPersistence(firebaseAuth, browserLocalPersistence);
 
       const credential = await signInWithEmailAndPassword(firebaseAuth, trimmedEmail, password);
       const idToken = await credential.user.getIdToken();
@@ -320,6 +329,7 @@ export function AdminPanel() {
 
       setEmail("");
       setPassword("");
+      setIsHumanConfirmed(false);
       await loadConfig();
     } catch (error) {
       if (firebaseAuth.currentUser) {
@@ -331,7 +341,7 @@ export function AdminPanel() {
     } finally {
       setIsAuthenticating(false);
     }
-  }, [email, loadConfig, password, usesFirebaseLogin]);
+  }, [email, isHumanConfirmed, loadConfig, password, usesFirebaseLogin]);
 
   const handleSave = useCallback(async () => {
     if (!draftConfig || parseError) {
@@ -484,9 +494,23 @@ export function AdminPanel() {
                 />
               </div>
 
+              <label className="flex items-start gap-3 rounded-2xl border border-surface-border bg-white px-4 py-3 text-sm text-ink-800">
+                <input
+                  type="checkbox"
+                  checked={isHumanConfirmed}
+                  onChange={(event) => setIsHumanConfirmed(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border border-surface-border text-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary-soft)]"
+                />
+                <span>I am not a robot</span>
+              </label>
+
               {message ? <div className={getMessageClassName(messageTone)}>{message}</div> : null}
 
-              <Button type="submit" className="w-full" disabled={isAuthenticating}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isAuthenticating || !isHumanConfirmed}
+              >
                 {isAuthenticating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

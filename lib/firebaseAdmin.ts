@@ -1,5 +1,6 @@
 import { cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 function getFirebaseAdminProjectId() {
   return process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -67,4 +68,8 @@ export function getFirebaseAdminApp() {
 
 export function getFirebaseAdminDb() {
   return getFirestore(getFirebaseAdminApp());
+}
+
+export function getFirebaseAdminStorage() {
+  return getStorage(getFirebaseAdminApp());
 }
