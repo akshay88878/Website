@@ -70,6 +70,10 @@ export interface ProductItem {
   description: string;
   image?: string;
   imageSize?: "small" | "medium" | "large";
+  images?: string[];
+  imageCarouselEnabled?: boolean;
+  imageAutoSlideEnabled?: boolean;
+  imageAutoSlideDelay?: number;
   detailSections: ProductDetailSection[];
 }
 

@@ -1,4 +1,5 @@
 import type { ProductDetailSection, ProductItem, ProductsPageContent } from "@/types/siteConfig";
+import { ImageCarousel } from "./ImageCarousel";
 
 type ProductCardProps = {
   product: ProductItem;
@@ -48,14 +49,19 @@ export function ProductCard({ product, labels, index = 0 }: ProductCardProps) {
   const sizeClass = imageSizeClasses[product.imageSize ?? "medium"];
   const isImageLeft = index % 2 === 0;
 
-  const imageElement = product.image ? (
-    <div className={`${sizeClass} overflow-hidden rounded-3xl`}>
-      <img
-        src={product.image}
-        alt={product.title}
-        className="h-full w-full object-contain"
-      />
-    </div>
+  // Use multiple images if available, otherwise fall back to single image
+  const imagesToDisplay = (product.images && product.images.length > 0) 
+    ? product.images 
+    : (product.image ? [product.image] : []);
+
+  const imageElement = imagesToDisplay.length > 0 ? (
+    <ImageCarousel
+      images={imagesToDisplay}
+      alt={product.title}
+      sizeClass={sizeClass}
+      autoSlideEnabled={product.imageAutoSlideEnabled}
+      autoSlideDelay={product.imageAutoSlideDelay ?? 3}
+    />
   ) : (
     <div className={`${sizeClass} flex items-center justify-center rounded-3xl bg-surface-subtle`}>
       <p className="text-sm text-ink-400">No image</p>

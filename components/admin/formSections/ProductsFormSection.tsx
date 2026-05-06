@@ -247,6 +247,118 @@ export const ProductsFormSection = memo(function ProductsFormSection({
                 </select>
               </Field>
 
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id={`carousel-${productIndex}`}
+                    checked={product.imageCarouselEnabled ?? false}
+                    onChange={(event) =>
+                      updateProduct(productIndex, {
+                        ...product,
+                        imageCarouselEnabled: event.target.checked,
+                        images: event.target.checked && (!product.images || product.images.length === 0) 
+                          ? (product.image ? [product.image] : [])
+                          : product.images
+                      })
+                    }
+                    className="h-4 w-4 rounded"
+                  />
+                  <label htmlFor={`carousel-${productIndex}`} className="text-sm font-medium text-ink-900">
+                    Enable image gallery / carousel
+                  </label>
+                </div>
+
+                {product.imageCarouselEnabled && (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id={`autoslide-${productIndex}`}
+                        checked={product.imageAutoSlideEnabled ?? false}
+                        onChange={(event) =>
+                          updateProduct(productIndex, {
+                            ...product,
+                            imageAutoSlideEnabled: event.target.checked
+                          })
+                        }
+                        className="h-4 w-4 rounded"
+                      />
+                      <label htmlFor={`autoslide-${productIndex}`} className="text-sm font-medium text-ink-900">
+                        Auto-slide images
+                      </label>
+                    </div>
+
+                    {product.imageAutoSlideEnabled && (
+                      <Field label="Auto-slide delay (seconds)">
+                        <Input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={product.imageAutoSlideDelay ?? 3}
+                          onChange={(event) =>
+                            updateProduct(productIndex, {
+                              ...product,
+                              imageAutoSlideDelay: parseInt(event.target.value, 10) || 3
+                            })
+                          }
+                        />
+                      </Field>
+                    )}
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-ink-900">Gallery images</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            updateProduct(productIndex, {
+                              ...product,
+                              images: [...(product.images ?? []), ""]
+                            })
+                          }
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add image
+                        </Button>
+                      </div>
+
+                      {(product.images ?? []).map((image, imageIndex) => (
+                        <div key={`${productIndex}-image-${imageIndex}`} className="space-y-2 rounded-2xl bg-surface-subtle p-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-xs font-medium text-ink-600">Image {imageIndex + 1}</p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                updateProduct(productIndex, {
+                                  ...product,
+                                  images: removeAt(product.images ?? [], imageIndex)
+                                })
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <FirebaseImageField
+                            value={image}
+                            onChange={(url) =>
+                              updateProduct(productIndex, {
+                                ...product,
+                                images: replaceAt(product.images ?? [], imageIndex, url)
+                              })
+                            }
+                            uploadPath="site-config/products"
+                            previewAlt={`${product.title} - Image ${imageIndex + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="mt-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-ink-900">Product sections</p>

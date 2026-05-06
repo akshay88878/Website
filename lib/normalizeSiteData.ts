@@ -82,6 +82,10 @@ const productSchema = z.preprocess((value) => {
   description: z.string().min(1),
   image: z.string().optional(),
   imageSize: z.enum(["small", "medium", "large"]).optional(),
+  images: z.array(z.string()).optional(),
+  imageCarouselEnabled: z.boolean().optional(),
+  imageAutoSlideEnabled: z.boolean().optional(),
+  imageAutoSlideDelay: z.number().min(1).max(30).optional(),
   detailSections: z.array(productDetailSectionSchema)
 }));
 
