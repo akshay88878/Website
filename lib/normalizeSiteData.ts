@@ -80,6 +80,8 @@ const productSchema = z.preprocess((value) => {
 }, z.object({
   title: z.string().min(1),
   description: z.string().min(1),
+  image: z.string().optional(),
+  imageSize: z.enum(["small", "medium", "large"]).optional(),
   detailSections: z.array(productDetailSectionSchema)
 }));
 

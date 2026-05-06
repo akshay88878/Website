@@ -68,6 +68,8 @@ export interface HighlightsContent {
 export interface ProductItem {
   title: string;
   description: string;
+  image?: string;
+  imageSize?: "small" | "medium" | "large";
   detailSections: ProductDetailSection[];
 }
 

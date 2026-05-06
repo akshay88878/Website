@@ -1,9 +1,9 @@
-import { Card } from "@/components/ui/Card";
 import type { ProductDetailSection, ProductItem, ProductsPageContent } from "@/types/siteConfig";
 
 type ProductCardProps = {
   product: ProductItem;
   labels: ProductsPageContent["cardLabels"];
+  index?: number;
 };
 
 function renderSectionContent(section: ProductDetailSection) {
@@ -38,39 +38,76 @@ function renderSectionContent(section: ProductDetailSection) {
   return <p className="mt-3 whitespace-pre-line text-sm text-ink-600">{section.body}</p>;
 }
 
-export function ProductCard({ product, labels }: ProductCardProps) {
-  return (
-    <Card className="group h-full p-8 hover:-translate-y-1">
-      <div className="flex h-full flex-col">
-        <div>
-          <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
-            {labels.eyebrow}
-          </p>
-          <h2 className="mt-4 whitespace-pre-line text-2xl font-bold">{product.title}</h2>
-          <p className="mt-4 whitespace-pre-line text-base text-ink-600">
-            {product.description}
-          </p>
-        </div>
+export function ProductCard({ product, labels, index = 0 }: ProductCardProps) {
+  const imageSizeClasses = {
+    small: "h-64",
+    medium: "h-80",
+    large: "h-96"
+  };
 
-        <div className="mt-8 flex flex-1 flex-col gap-6">
-          {product.detailSections
-            .filter((section) =>
-              section.style === "text"
-                ? Boolean(section.body?.trim())
-                : Boolean(section.items?.length)
-            )
-            .map((section, index) => (
-              <section key={`${product.title}-${section.heading || "section"}-${index}`}>
-                {section.heading.trim() ? (
-                  <h3 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
-                    {section.heading}
-                  </h3>
-                ) : null}
-                {renderSectionContent(section)}
-              </section>
-            ))}
-        </div>
+  const sizeClass = imageSizeClasses[product.imageSize ?? "medium"];
+  const isImageLeft = index % 2 === 0;
+
+  const imageElement = product.image ? (
+    <div className={`${sizeClass} overflow-hidden rounded-3xl`}>
+      <img
+        src={product.image}
+        alt={product.title}
+        className="h-full w-full object-contain"
+      />
+    </div>
+  ) : (
+    <div className={`${sizeClass} flex items-center justify-center rounded-3xl bg-surface-subtle`}>
+      <p className="text-sm text-ink-400">No image</p>
+    </div>
+  );
+
+  const contentElement = (
+    <div className="flex flex-col justify-start">
+      <div>
+        <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
+          {labels.eyebrow}
+        </p>
+        <h2 className="mt-4 whitespace-pre-line text-2xl font-bold">{product.title}</h2>
+        <p className="mt-4 whitespace-pre-line text-base text-ink-600">
+          {product.description}
+        </p>
       </div>
-    </Card>
+
+      <div className="mt-8 flex flex-col gap-6">
+        {product.detailSections
+          .filter((section) =>
+            section.style === "text"
+              ? Boolean(section.body?.trim())
+              : Boolean(section.items?.length)
+          )
+          .map((section, sectionIndex) => (
+            <div key={`${product.title}-${section.heading || "section"}-${sectionIndex}`}>
+              {section.heading.trim() ? (
+                <h3 className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+                  {section.heading}
+                </h3>
+              ) : null}
+              {renderSectionContent(section)}
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-2 lg:items-center py-16">
+      {isImageLeft ? (
+        <>
+          {imageElement}
+          {contentElement}
+        </>
+      ) : (
+        <>
+          {contentElement}
+          {imageElement}
+        </>
+      )}
+    </div>
   );
 }

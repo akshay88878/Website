@@ -179,12 +179,13 @@ const ProductsPreview = memo(function ProductsPreview({ config }: { config: Site
           <p className="section-copy mt-5 whitespace-pre-line">{pageContent.description}</p>
         </div>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-2">
-          {pageContent.products.map((product) => (
+        <div className="mt-12 space-y-0">
+          {pageContent.products.map((product, index) => (
             <MemoizedProductCard
               key={product.title}
               product={product}
               labels={pageContent.cardLabels}
+              index={index}
             />
           ))}
         </div>

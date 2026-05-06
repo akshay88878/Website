@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { FirebaseImageField } from "@/components/admin/FirebaseImageField";
 import type {
   Alignment,
   ContainerWidth,
@@ -37,6 +38,8 @@ function createEmptyProduct(): ProductItem {
   return {
     title: "",
     description: "",
+    image: "",
+    imageSize: "medium",
     detailSections: []
   };
 }
@@ -212,6 +215,37 @@ export const ProductsFormSection = memo(function ProductsFormSection({
                   />
                 </Field>
               </div>
+
+              <Field label="Product image">
+                <FirebaseImageField
+                  value={product.image ?? ""}
+                  onChange={(url) =>
+                    updateProduct(productIndex, {
+                      ...product,
+                      image: url
+                    })
+                  }
+                  uploadPath="site-config/products"
+                  previewAlt={product.title}
+                />
+              </Field>
+
+              <Field label="Product image size">
+                <select
+                  className={selectClassName}
+                  value={product.imageSize ?? "medium"}
+                  onChange={(event) =>
+                    updateProduct(productIndex, {
+                      ...product,
+                      imageSize: event.target.value as "small" | "medium" | "large"
+                    })
+                  }
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </Field>
 
               <div className="mt-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
