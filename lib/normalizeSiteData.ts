@@ -153,7 +153,8 @@ const siteConfigSchema = z.object({
       illustrationAlt: z.string().min(1),
       alignment: alignmentSchema,
       width: containerWidthSchema,
-      topSpacing: heroTopSpacingSchema
+      topSpacing: heroTopSpacingSchema,
+      imageWidthPercent: z.number().min(30).max(70).optional()
     }),
     highlights: z.object({
       items: z.array(z.string().min(1)),

@@ -46,7 +46,8 @@ export const defaultSiteConfig: SiteConfig = {
       illustrationAlt: "AI robot teaching learners in a modern digital classroom",
       alignment: "left",
       width: "wide",
-      topSpacing: 50
+      topSpacing: 50,
+      imageWidthPercent: 50
     },
     highlights: {
       items: [

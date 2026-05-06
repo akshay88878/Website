@@ -57,6 +57,7 @@ export interface HeroContent {
   alignment: Alignment;
   width: ContainerWidth;
   topSpacing: number;
+  imageWidthPercent?: number;
 }
 
 export interface HighlightsContent {

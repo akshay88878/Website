@@ -22,8 +22,18 @@ export default async function BlogsPage() {
   return (
     <main className="page-shell py-16 md:py-20">
       <section className="container">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="glass-panel p-8 md:p-10">
+        <article className="glass-panel overflow-hidden">
+          <div className="p-5 pb-0">
+            <Image
+              src={pageContent.imageSrc}
+              alt={pageContent.imageAlt}
+              width={1280}
+              height={720}
+              className="w-full rounded-[1.5rem] object-cover"
+            />
+          </div>
+
+          <div className="p-8 md:p-10">
             <p className="whitespace-pre-line text-sm font-semibold uppercase tracking-[0.24em] text-[var(--theme-primary)]">
               {pageContent.eyebrow}
             </p>
@@ -37,18 +47,8 @@ export default async function BlogsPage() {
                 </p>
               ))}
             </div>
-          </article>
-
-          <aside className="glass-panel overflow-hidden p-5">
-            <Image
-              src={pageContent.imageSrc}
-              alt={pageContent.imageAlt}
-              width={720}
-              height={860}
-              className="h-full w-full rounded-[1.5rem] object-cover"
-            />
-          </aside>
-        </div>
+          </div>
+        </article>
       </section>
     </main>
   );

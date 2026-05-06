@@ -194,6 +194,30 @@ export const HomeFormSection = memo(function HomeFormSection({
             </div>
           </div>
         </Field>
+
+        <Field
+          label="Hero image width"
+          hint={`Controls the image-to-text ratio. Current value: ${config.content.hero.imageWidthPercent ?? 50}% image, ${100 - (config.content.hero.imageWidthPercent ?? 50)}% text`}
+        >
+          <div className="space-y-3">
+            <input
+              type="range"
+              min={30}
+              max={70}
+              step={1}
+              value={config.content.hero.imageWidthPercent ?? 50}
+              onChange={(event) =>
+                updateField(["content", "hero", "imageWidthPercent"], Number(event.target.value))
+              }
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-border accent-[var(--theme-primary)]"
+            />
+            <div className="flex items-center justify-between text-xs text-ink-500">
+              <span>More text</span>
+              <span>{config.content.hero.imageWidthPercent ?? 50}%</span>
+              <span>More image</span>
+            </div>
+          </div>
+        </Field>
       </EditorCard>
     </>
   );
