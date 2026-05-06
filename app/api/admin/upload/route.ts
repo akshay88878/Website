@@ -76,10 +76,4 @@ export async function POST(request: Request) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "50mb"
-    }
-  }
-};
+export const maxDuration = 60;
